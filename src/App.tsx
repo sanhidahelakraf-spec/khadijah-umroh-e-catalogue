@@ -21,21 +21,21 @@ const [users, setUsers] = React.useState<User[]>(initialUsers);
 
 // Ambil data dari backend saat pertama load
 React.useEffect(() => {
-  fetch('http://localhost:5000/api/paket')
+  fetch('https://khadijah-umroh-e-catalogue-production.up.railway.app/api/paket')
     .then(r => r.json())
     .then(data => {
       if (Array.isArray(data) && data.length > 0) setPackages(data);
     })
     .catch(() => {});
 
-  fetch('http://localhost:5000/api/pesanan')
+  fetch('https://khadijah-umroh-e-catalogue-production.up.railway.app/api/pesanan')
     .then(r => r.json())
     .then(data => {
       if (Array.isArray(data) && data.length > 0) setBookings(data);
     })
     .catch(() => {});
 
-  fetch('http://localhost:5000/api/jamaah')
+  fetch('https://khadijah-umroh-e-catalogue-production.up.railway.app/api/jamaah')
     .then(r => r.json())
     .then(data => {
       if (Array.isArray(data) && data.length > 0) setUsers(data);
