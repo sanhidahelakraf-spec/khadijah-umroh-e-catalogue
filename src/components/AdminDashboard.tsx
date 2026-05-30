@@ -102,29 +102,29 @@ export default function AdminDashboard({
 
     if (editingPackageId) {
       // Update existing
-      const updated = packages.map(p => p.id === editingPackageId ? {
-        ...p,
-        name: formName,
-        price: Number(formPrice),
-        duration: Number(formDuration),
-        schedule: formSchedule,
-        hotelMakkah: formHotelMakkah,
-        hotelMadinah: formHotelMadinah,
-        maskapai: formMaskapai,
-        description: formDescription,
+     const handleSavePackage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formName) return;
+
+    if (editingPackageId) {
+      const updatedPkg = {
+        name: formName, price: Number(formPrice), duration: Number(formDuration),
+        schedule: formSchedule, hotelMakkah: formHotelMakkah, hotelMadinah: formHotelMadinah,
+        maskapai: formMaskapai, description: formDescription,
         image: formImage || "https://images.unsplash.com/photo-1591604021695-0c69b7c05981?q=80&w=600&auto=format&fit=crop",
         bestSeller: formBestSeller
-      } : p);
+      };
+      // Simpan ke database
+      await fetch(`http://localhost:5000/api/paket/${editingPackageId}`, {
+        method: 'PUT', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(updatedPkg)
+      });
+      const updated = packages.map(p => p.id === editingPackageId ? { ...p, ...updatedPkg } : p);
       onUpdatePackages(updated);
     } else {
-      // Add new
       const newPkg: UmrohPackage = {
-        id: "pkg-" + Date.now(),
-        name: formName,
-        price: Number(formPrice),
-        duration: Number(formDuration),
-        schedule: formSchedule,
-        status: "Aktif",
+        id: "pkg-" + Date.now(), name: formName, price: Number(formPrice),
+        duration: Number(formDuration), schedule: formSchedule, status: "Aktif",
         hotelMakkah: formHotelMakkah || "Hotel Makkah (★4)",
         hotelMadinah: formHotelMadinah || "Hotel Madinah (★4)",
         maskapai: formMaskapai,
@@ -132,9 +132,19 @@ export default function AdminDashboard({
         image: formImage || "https://images.unsplash.com/photo-1591604021695-0c69b7c05981?q=80&w=600&auto=format&fit=crop",
         bestSeller: formBestSeller
       };
+      // Simpan ke database
+      await fetch('http://localhost:5000/api/paket', {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(newPkg)
+      });
       onUpdatePackages([...packages, newPkg]);
     }
 
+    setIsAddingPackage(false); setEditingPackageId(null); setFormName("");
+    setFormPrice(28000000); setFormDuration(12); setFormSchedule("Mei 2026");
+    setFormHotelMakkah(""); setFormHotelMadinah(""); setFormMaskapai("Saudia Airlines");
+    setFormDescription(""); setFormImage(""); setFormBestSeller(false);
+  };
     // Reset Form
     setIsAddingPackage(false);
     setEditingPackageId(null);
@@ -180,14 +190,23 @@ export default function AdminDashboard({
     setEditBookingStep(b.trackingStep);
   };
 
-  const handleSaveBookingEdit = () => {
+ const handleSaveBookingEdit = async () => {
     if (!editingBookingId) return;
+    const booking = bookings.find(b => b.id === editingBookingId);
+    if (!booking) return;
+
+    const updatedData = {
+      status: editBookingStatus, paymentStatus: editBookingPayment,
+      trackingStep: editBookingStep, travelDate: booking.travelDate
+    };
+    // Simpan ke database
+    await fetch(`http://localhost:5000/api/pesanan/${editingBookingId}`, {
+      method: 'PUT', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(updatedData)
+    });
     const updated = bookings.map(b => b.id === editingBookingId ? {
-      ...b,
-      status: editBookingStatus,
-      paymentStatus: editBookingPayment,
-      userPhone: editBookingPhone,
-      trackingStep: editBookingStep,
+      ...b, status: editBookingStatus, paymentStatus: editBookingPayment,
+      userPhone: editBookingPhone, trackingStep: editBookingStep,
     } : b);
     onUpdateBookings(updated);
     setEditingBookingId(null);
@@ -200,11 +219,14 @@ export default function AdminDashboard({
     }
   };
 
-  const handleUpdateStepDirectly = (id: string, step: number) => {
-    const updated = bookings.map(b => b.id === id ? {
-      ...b,
-      trackingStep: step,
-    } : b);
+  const handleUpdateStepDirectly = async (id: string, step: number) => {
+    const booking = bookings.find(b => b.id === id);
+    if (!booking) return;
+    await fetch(`http://localhost:5000/api/pesanan/${id}`, {
+      method: 'PUT', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ status: booking.status, paymentStatus: booking.paymentStatus, trackingStep: step, travelDate: booking.travelDate })
+    });
+    const updated = bookings.map(b => b.id === id ? { ...b, trackingStep: step } : b);
     onUpdateBookings(updated);
   };
 
