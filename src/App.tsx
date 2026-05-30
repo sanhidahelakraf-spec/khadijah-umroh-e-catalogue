@@ -14,10 +14,34 @@ import { Phone, MapPin, Mail, Clock, HelpCircle, ArrowUpRight, ShieldCheck, Chec
 
 export default function App() {
   // --- 1. Core State Initialization with Persistency ---
+// --- 1. Core State ---
 const [packages, setPackages] = React.useState<UmrohPackage[]>(initialPackages);
 const [bookings, setBookings] = React.useState<Booking[]>(initialBookings);
 const [users, setUsers] = React.useState<User[]>(initialUsers);
 
+// Ambil data dari backend saat pertama load
+React.useEffect(() => {
+  fetch('http://localhost:5000/api/paket')
+    .then(r => r.json())
+    .then(data => {
+      if (Array.isArray(data) && data.length > 0) setPackages(data);
+    })
+    .catch(() => {});
+
+  fetch('http://localhost:5000/api/pesanan')
+    .then(r => r.json())
+    .then(data => {
+      if (Array.isArray(data) && data.length > 0) setBookings(data);
+    })
+    .catch(() => {});
+
+  fetch('http://localhost:5000/api/jamaah')
+    .then(r => r.json())
+    .then(data => {
+      if (Array.isArray(data) && data.length > 0) setUsers(data);
+    })
+    .catch(() => {});
+}, []);
 
   // Active Screen View: "public" | "login" | "admin" | "jamaah"
   const [activeView, setActiveView] = React.useState<"public" | "login" | "admin" | "jamaah">("public");
@@ -36,19 +60,6 @@ const [users, setUsers] = React.useState<User[]>(initialUsers);
   const [consultModalOpen, setConsultModalOpen] = React.useState(false);
   const [trackingModalOpen, setTrackingModalOpen] = React.useState(false);
   const [successBooking, setSuccessBooking] = React.useState<Booking | null>(null);
-
-  // Sync state changes with client cache persistently
-  React.useEffect(() => {
-    localStorage.setItem("khadijah_packages", JSON.stringify(packages));
-  }, [packages]);
-
-  React.useEffect(() => {
-    localStorage.setItem("khadijah_bookings", JSON.stringify(bookings));
-  }, [bookings]);
-
-  React.useEffect(() => {
-    localStorage.setItem("khadijah_users", JSON.stringify(users));
-  }, [users]);
 
   // --- 2. Action & Authentication Handlers ---
   const handleLoginSuccess = (email: string, role: "admin" | "jamaah") => {
