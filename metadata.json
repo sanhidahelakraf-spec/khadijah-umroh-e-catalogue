@@ -1,0 +1,6 @@
+{
+  "name": "Khadijah Umroh E-Catalogue",
+  "description": "Sistem E-Catalogue dan Manajemen Keberangkatan Umroh Khadijah Travel Indonesia.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
