@@ -160,6 +160,66 @@ app.post('/api/seed', (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
+// Setup tabel database
+app.get('/api/setup', (req, res) => {
+  const queries = [
+    `CREATE TABLE IF NOT EXISTS paket_umroh (
+      id VARCHAR(50) PRIMARY KEY,
+      name VARCHAR(100),
+      duration INT,
+      price BIGINT,
+      schedule VARCHAR(50),
+      status VARCHAR(20),
+      description TEXT,
+      hotelMakkah VARCHAR(100),
+      hotelMadinah VARCHAR(100),
+      maskapai VARCHAR(100),
+      image TEXT,
+      bestSeller TINYINT(1) DEFAULT 0
+    )`,
+    `CREATE TABLE IF NOT EXISTS pesanan (
+      id VARCHAR(50) PRIMARY KEY,
+      bookingCode VARCHAR(20),
+      userEmail VARCHAR(100),
+      userName VARCHAR(100),
+      userPhone VARCHAR(20),
+      packageId VARCHAR(50),
+      packageName VARCHAR(100),
+      price BIGINT,
+      date VARCHAR(50),
+      status VARCHAR(20),
+      paymentStatus VARCHAR(20),
+      travelDate VARCHAR(50),
+      trackingStep INT DEFAULT 1,
+      maskapai VARCHAR(100),
+      hotelMakkah VARCHAR(100),
+      hotelMadinah VARCHAR(100),
+      duration INT
+    )`,
+    `CREATE TABLE IF NOT EXISTS jamaah (
+      id VARCHAR(50) PRIMARY KEY,
+      email VARCHAR(100),
+      name VARCHAR(100),
+      role VARCHAR(20) DEFAULT 'jamaah',
+      phone VARCHAR(20)
+    )`,
+    `CREATE TABLE IF NOT EXISTS admin (
+      id VARCHAR(50) PRIMARY KEY,
+      email VARCHAR(100),
+      name VARCHAR(100),
+      password VARCHAR(100),
+      role VARCHAR(20) DEFAULT 'admin'
+    )`
+  ];
+
+  let done = 0;
+  queries.forEach(q => {
+    db.query(q, (err) => {
+      done++;
+      if (done === queries.length) res.json({ success: true, message: 'Tabel berhasil dibuat!' });
+    });
+  });
+});
 app.listen(PORT, () => {
   console.log(`Server berjalan di http://localhost:${PORT}`);
 });
