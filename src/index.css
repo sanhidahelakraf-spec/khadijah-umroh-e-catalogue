@@ -30,7 +30,7 @@
 
 /* Immersive mosque background for hero */
 .hero-bg {
-  background-image: linear-gradient(to right, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.45) 45%, rgba(0, 0, 0, 0.05) 85%), url('https://images.unsplash.com/photo-1542856391-010fb87dcfed?q=80&w=1800&auto=format&fit=crop');
+  background-image: linear-gradient(to right, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.45) 45%, rgba(0, 0, 0, 0.05) 85%), url('https://geoancient.com/wp-content/uploads/2025/01/Makkah-and-Masjid-al-Haram.jpg');
   background-size: cover;
   background-position: center 30%;
 }
