@@ -289,7 +289,7 @@ React.useEffect(() => {
 
             <div className="rounded-2xl overflow-hidden h-96 relative border border-slate-200 shadow-lg">
               <img
-                src="https://drive.google.com/file/d/1FYcFgsenD1rBNYxs3yPV0RXjZGhiaTMu/view?usp=drivesdk"
+                src="https://instagram.fcgk4-4.fna.fbcdn.net/v/t51.82787-19/584389453_17861364717540929_703425519718418617_n.jpg?stp=dst-jpg_s320x320_tt6&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLmRqYW5nby4xMDgwLmMyIn0&_nc_ht=instagram.fcgk4-4.fna.fbcdn.net&_nc_cat=105&_nc_oc=Q6cZ2gFQNLiQ3jmecxordHKnQFF4KzYd5tUf1RgNxoHF8csH44tT_Hwg9sefYSHXx1GVuP8&_nc_ohc=upNwzibi-bAQ7kNvwEdf-wU&_nc_gid=KYIP7CyCb45PKWz-bWMxhQ&edm=AOQ1c0wBAAAA&ccb=7-5&oh=00_Af-JC4_iBtSYLRz8M-kkQ51m-gUSGxrAep3J2RnlzktU7w&oe=6A24577D&_nc_sid=8b3546"
                 alt="Muslim pilgrims at mosque courtyard"
                 className="w-full h-full object-cover"
                 referrerPolicy="no-referrer"
