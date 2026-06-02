@@ -12,7 +12,7 @@ export const initialPackages: UmrohPackage[] = [
     hotelMakkah: "Louloua Al-Sharq / Setaraf (★3)",
     hotelMadinah: "Al-Eiman Nour / Setaraf (★3)",
     maskapai: "AirAsia X / Lion Air",
-    image: "https://images.unsplash.com/photo-1591604021695-0c69b7c05981?q=80&w=800&auto=format&fit=crop",
+    image: "https://wallpapercave.com/wp/wp2182984.jpg",
     bestSeller: false,
   },
   {
@@ -26,7 +26,7 @@ export const initialPackages: UmrohPackage[] = [
     hotelMakkah: "Anjum Hotel / Setaraf (★4)",
     hotelMadinah: "Al-Ansar Golden / Setaraf (★4)",
     maskapai: "Batik Air / Flynas",
-    image: "https://images.unsplash.com/photo-1527126887308-6ced83cbd290?q=80&w=800&auto=format&fit=crop",
+    image: "https://wallpapercave.com/wp/wp2182984.jpg",
     bestSeller: false,
   },
   {
@@ -40,7 +40,7 @@ export const initialPackages: UmrohPackage[] = [
     hotelMakkah: "Swissotel / Setaraf (★5)",
     hotelMadinah: "Pullman / Setaraf (★5)",
     maskapai: "Saudia Airlines",
-    image: "https://images.unsplash.com/photo-1591604358641-6eade17ca160?q=80&w=800&auto=format&fit=crop",
+    image: "https://wallpapercave.com/wp/wp2182984.jpg",
     bestSeller: true,
   },
   {
@@ -54,7 +54,7 @@ export const initialPackages: UmrohPackage[] = [
     hotelMakkah: "Fairmont Makkah Clock Royal Tower (★5)",
     hotelMadinah: "The Oberoi Madinah (★5)",
     maskapai: "Saudia Airlines (Business Class)",
-    image: "https://images.unsplash.com/photo-1542856391-010fb87dcfed?q=80&w=800&auto=format&fit=crop",
+    image: "https://wallpapercave.com/wp/wp2182984.jpg",
     bestSeller: false,
   },
 ];
