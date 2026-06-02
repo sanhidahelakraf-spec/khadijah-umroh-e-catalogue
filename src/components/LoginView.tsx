@@ -1,6 +1,8 @@
 import React from "react";
-import { Eye, EyeOff, Lock, Mail, Users, ArrowLeft } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail, ArrowLeft } from "lucide-react";
 import CompanyLogo from "./CompanyLogo";
+
+const API = "https://khadijah-umroh-e-catalogue-production.up.railway.app/api";
 
 interface LoginViewProps {
   onLoginSuccess: (email: string, role: "admin" | "jamaah") => void;
@@ -13,32 +15,50 @@ export default function LoginView({ onLoginSuccess, onBackToPublic }: LoginViewP
   const [showPassword, setShowPassword] = React.useState(false);
   const [rememberMe, setRememberMe] = React.useState(true);
   const [validationError, setValidationError] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) {
-      setValidationError("Email wajib diisi.");
-      return;
-    }
+    setValidationError("");
+    setLoading(true);
 
-    // Direct role mappings for demo
-    if (email.toLowerCase().includes("admin")) {
-      onLoginSuccess(email, "admin");
-    } else {
-      onLoginSuccess(email, "jamaah");
-    }
-  };
+    try {
+      // Cek admin dulu
+      const adminRes = await fetch(`${API}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
 
-  const handleDemoLogin = (emailChoice: string, roleChoice: "admin" | "jamaah") => {
-    setEmail(emailChoice);
-    setPassword("password123");
-    onLoginSuccess(emailChoice, roleChoice);
+      if (adminRes.ok) {
+        const data = await adminRes.json();
+        if (data.user) {
+          onLoginSuccess(email, "admin");
+          return;
+        }
+      }
+
+      // Cek jamaah
+      const jamaahRes = await fetch(`${API}/jamaah`);
+      const jamaahList = await jamaahRes.json();
+      const found = jamaahList.find((j: any) => j.email.toLowerCase() === email.toLowerCase());
+
+      if (found) {
+        onLoginSuccess(email, "jamaah");
+        return;
+      }
+
+      setValidationError("Email atau password salah. Silakan coba lagi.");
+    } catch (err) {
+      setValidationError("Gagal terhubung ke server. Coba lagi.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center p-4 relative font-sans text-slate-700">
       
-      {/* Back button to public page */}
       <button 
         onClick={onBackToPublic}
         className="absolute top-6 left-6 text-slate-700 text-xs bg-white border border-slate-200/80 rounded-lg px-4 py-2 hover:bg-slate-50 flex items-center gap-2 cursor-pointer transition-all shadow-xs"
@@ -47,35 +67,29 @@ export default function LoginView({ onLoginSuccess, onBackToPublic }: LoginViewP
         <span>Kembali ke Katalog</span>
       </button>
 
-      {/* Item label matching slide number 1. LOGIN */}
       <div className="absolute top-6 right-6 hidden sm:block">
         <span className="bg-white text-[#0f5132] text-xs font-black tracking-widest uppercase px-4 py-2 rounded-md shadow-xs border border-slate-200">
           SISTEM KEAMANAN JAMAAH
         </span>
       </div>
 
-      {/* Main Login Card - matches Page 1 design strictly */}
-      <div className="bg-white rounded-2xl w-full max-w-md shadow-xl overflow-hidden p-8 sm:p-10 border border-slate-200/85 border-t-4 border-t-[#0f5132] relative z-10 transition-all">
+      <div className="bg-white rounded-2xl w-full max-w-md shadow-xl overflow-hidden p-8 sm:p-10 border border-slate-200/85 border-t-4 border-t-[#0f5132] relative z-10">
         
-        {/* Khadijah Logo Block */}
         <div className="text-center space-y-2 mb-8 flex flex-col items-center">
           <CompanyLogo variant="full" iconSize="lg" className="mb-4" />
-          
           <div className="space-y-1">
             <h2 className="text-lg font-black text-slate-900 tracking-tight">Sistem E-Catalogue Umroh</h2>
             <p className="text-xs text-slate-500 font-medium">Silakan login untuk melanjutkan</p>
           </div>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleLogin} className="space-y-5">
           {validationError && (
-            <div className="p-3 bg-red-50 text-red-700 text-xs rounded-lg border border-red-200 font-medium whitespace-pre-line">
+            <div className="p-3 bg-red-50 text-red-700 text-xs rounded-lg border border-red-200 font-medium">
               {validationError}
             </div>
           )}
 
-          {/* Email input */}
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-slate-700 block">Email</label>
             <div className="relative">
@@ -93,7 +107,6 @@ export default function LoginView({ onLoginSuccess, onBackToPublic }: LoginViewP
             </div>
           </div>
 
-          {/* Password input */}
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-slate-700 block">Password</label>
             <div className="relative">
@@ -118,63 +131,37 @@ export default function LoginView({ onLoginSuccess, onBackToPublic }: LoginViewP
             </div>
           </div>
 
-          {/* Remember me checkbox */}
           <div className="flex items-center justify-between py-1">
-            <label className="flex items-center gap-2 text-xs text-slate-500 font-medium cursor-pointer py-1 select-none">
+            <label className="flex items-center gap-2 text-xs text-slate-500 font-medium cursor-pointer select-none">
               <input
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
-                className="rounded border-slate-300 text-[#0f5132] focus:ring-offset-0 focus:ring-0"
+                className="rounded border-slate-300 text-[#0f5132]"
               />
               <span>Ingat saya</span>
             </label>
             <button
               type="button"
-              onClick={() => alert("Gunakan fast login jika lupa password.")}
+              onClick={() => alert("Hubungi admin untuk reset password.")}
               className="text-xs text-[#0f5132] hover:text-[#0c4027] font-bold hover:underline"
             >
               Lupa password?
             </button>
           </div>
 
-          {/* Submit button */}
           <button
             type="submit"
-            className="w-full bg-[#0f5132] hover:bg-[#0c4027] text-white font-extrabold text-sm py-3.5 rounded-lg border border-transparent shadow-md cursor-pointer transition-colors block text-center mt-2"
+            disabled={loading}
+            className="w-full bg-[#0f5132] hover:bg-[#0c4027] text-white font-extrabold text-sm py-3.5 rounded-lg shadow-md cursor-pointer transition-colors block text-center mt-2 disabled:opacity-60"
           >
-            MASUK
+            {loading ? "Memverifikasi..." : "MASUK"}
           </button>
         </form>
 
-        {/* Demo Fast Login Switchers */}
-        <div className="mt-8 pt-6 border-t border-slate-100 text-center space-y-3">
-          <span className="text-[10px] text-slate-500 font-extrabold uppercase bg-slate-50 px-3 py-1 rounded-full border border-slate-200">
-            Akses Demo Instan (Satu-Klik)
-          </span>
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              onClick={() => handleDemoLogin("admin@khadijah.com", "admin")}
-              className="px-3 py-2.5 bg-slate-50 hover:bg-[#0f5132]/5 text-[#0f5132] text-xs font-bold rounded-lg border border-slate-200 transition-colors cursor-pointer flex items-center justify-center gap-1.5"
-            >
-              <Users className="w-3.5 h-3.5 text-[#0f5132]" />
-              <span>Menu Admin</span>
-            </button>
-            <button
-              onClick={() => handleDemoLogin("ahmad.fauzi@gmail.com", "jamaah")}
-              className="px-3 py-2.5 bg-slate-50 hover:bg-[#0f5132]/5 text-[#0f5132] text-xs font-bold rounded-lg border border-slate-200 transition-colors cursor-pointer flex items-center justify-center gap-1.5"
-            >
-              <Users className="w-3.5 h-3.5 text-[#0f5132]" />
-              <span>Menu Jamaah</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Centered copyright line */}
         <p className="text-center text-[10px] text-slate-400 font-medium mt-8 select-none">
           © 2026 Khadijah Travel Indonesia
         </p>
-
       </div>
     </div>
   );
