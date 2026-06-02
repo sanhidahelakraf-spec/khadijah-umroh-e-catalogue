@@ -23,10 +23,10 @@ export default function PackageDetail({ pkg, onBookNow }: PackageDetailProps) {
 
   // Preset sub-images matching premium specs list (Masjid Al-Haram, Medina, Food, Luxury Hotel)
   const subImages = [
-    "https://images.unsplash.com/photo-1591604021695-0c69b7c05981?q=80&w=300&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1564507592333-c60657eea523?q=80&w=300&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1580835239846-5bb9ce03c8c3?q=80&w=300&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1542856391-010fb87dcfed?q=80&w=300&auto=format&fit=crop",
+    "https://wallpapercave.com/wp/wp2182984.jpg",
+    "https://i.pinimg.com/originals/4d/6d/81/4d6d8168bfdede50e5ad865e92bd06d0.jpg",
+    "https://www.islamiclandmarks.com/wp-content/uploads/2023/05/interesting_facts_about_the_holy_kaaba_house_of_Allah.jpg",
+    "https://wallpapercave.com/wp/BLWHbTj.jpg",
   ];
 
   return (
