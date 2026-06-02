@@ -1,8 +1,8 @@
 import React from "react";
 import { 
   BarChart3, Users, Briefcase, DollarSign, Plus, Search, 
-  Edit, Trash2, CheckCircle, Clock, Check, X, ShieldAlert,
-  Menu, LogOut, Package, MapPin, Plane, HelpCircle, Eye, RefreshCw, FileText, Settings, Globe
+  Edit, Trash2, CheckCircle, Check, X,
+  Menu, LogOut, Package, RefreshCw, FileText, Settings, Globe, UserPlus
 } from "lucide-react";
 import { UmrohPackage, Booking, User } from "../types";
 import { getTrackingTimeline } from "../data/initialData";
@@ -21,7 +21,7 @@ interface AdminDashboardProps {
   onGoToPublic: () => void;
 }
 
-type TabType = "dashboard" | "paket" | "jamaah" | "tracking" | "promo" | "laporan" | "pengaturan";
+type TabType = "dashboard" | "paket" | "jamaah" | "tracking" | "promo" | "laporan" | "pengaturan" | "users";
 
 export default function AdminDashboard({
   currentEmail, packages, bookings, users,
@@ -50,6 +50,21 @@ export default function AdminDashboard({
   const [editBookingStep, setEditBookingStep] = React.useState(1);
   const [selectedTrackingBookingId, setSelectedTrackingBookingId] = React.useState<string>(bookings[0]?.id || "");
 
+  // User management states
+  const [adminList, setAdminList] = React.useState<any[]>([]);
+  const [newUserEmail, setNewUserEmail] = React.useState("");
+  const [newUserName, setNewUserName] = React.useState("");
+  const [newUserPassword, setNewUserPassword] = React.useState("");
+  const [newUserRole, setNewUserRole] = React.useState<"admin" | "jamaah">("jamaah");
+  const [newUserPhone, setNewUserPhone] = React.useState("");
+
+  React.useEffect(() => {
+    fetch(`${API}/admin`)
+      .then(r => r.json())
+      .then(data => { if (Array.isArray(data)) setAdminList(data); })
+      .catch(() => {});
+  }, []);
+
   const formatIDR = (num: number) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(num);
 
   const totalPackagesCount = packages.length;
@@ -71,7 +86,6 @@ export default function AdminDashboard({
     e.preventDefault();
     if (!formName) return;
     const imgUrl = formImage || "https://images.unsplash.com/photo-1591604021695-0c69b7c05981?q=80&w=600&auto=format&fit=crop";
-
     if (editingPackageId) {
       const updatedPkg = { name: formName, price: Number(formPrice), duration: Number(formDuration), schedule: formSchedule, hotelMakkah: formHotelMakkah, hotelMadinah: formHotelMadinah, maskapai: formMaskapai, description: formDescription, image: imgUrl, bestSeller: formBestSeller };
       await fetch(`${API}/paket/${editingPackageId}`, { method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(updatedPkg) });
@@ -92,9 +106,8 @@ export default function AdminDashboard({
   };
 
   const handleDeletePackage = (id: string) => {
-    if (window.confirm("Apakah Anda yakin ingin menghapus paket ini?")) {
+    if (window.confirm("Apakah Anda yakin ingin menghapus paket ini?"))
       onUpdatePackages(packages.filter(p => p.id !== id));
-    }
   };
 
   const startEditBooking = (b: Booking) => {
@@ -114,7 +127,7 @@ export default function AdminDashboard({
   };
 
   const handleDeleteBooking = (id: string) => {
-    if (window.confirm("Apakah Anda yakin ingin menghapus data jamaah ini?")) onUpdateBookings(bookings.filter(b => b.id !== id));
+    if (window.confirm("Hapus data jamaah ini?")) onUpdateBookings(bookings.filter(b => b.id !== id));
   };
 
   const handleUpdateStepDirectly = async (id: string, step: number) => {
@@ -124,13 +137,41 @@ export default function AdminDashboard({
     onUpdateBookings(bookings.map(b => b.id === id ? { ...b, trackingStep: step } : b));
   };
 
+  const handleAddUser = async () => {
+    if (!newUserEmail || !newUserName) return alert("Email dan nama wajib diisi!");
+    if (newUserRole === "admin") {
+      if (!newUserPassword) return alert("Password wajib diisi untuk admin!");
+      await fetch(`${API}/admin`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ email: newUserEmail, name: newUserName, password: newUserPassword, role: "admin" }) });
+      const res = await fetch(`${API}/admin`);
+      const data = await res.json();
+      setAdminList(data);
+    } else {
+      const newJamaah = { id: `user-${Date.now()}`, email: newUserEmail, name: newUserName, role: "jamaah", phone: newUserPhone };
+      await fetch(`${API}/jamaah`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(newJamaah) });
+      onUpdateBookings(bookings); // trigger refresh
+    }
+    setNewUserEmail(""); setNewUserName(""); setNewUserPassword(""); setNewUserPhone("");
+    alert(`User ${newUserRole} berhasil ditambahkan!`);
+  };
+
   const selectedTrackingBooking = bookings.find(b => b.id === selectedTrackingBookingId) || bookings[0];
+
+  const navItems = [
+    { id: "dashboard", label: "Dashboard", icon: <BarChart3 className="w-4 h-4 text-[#c5a880]" /> },
+    { id: "paket", label: "Paket Umroh", icon: <Briefcase className="w-4 h-4 text-[#c5a880]" /> },
+    { id: "jamaah", label: "Data Jamaah", icon: <Users className="w-4 h-4 text-[#c5a880]" /> },
+    { id: "tracking", label: "Tracking Order", icon: <RefreshCw className="w-4 h-4 text-[#c5a880]" /> },
+    { id: "promo", label: "Promo & Hub", icon: <FileText className="w-4 h-4 text-[#c5a880]" /> },
+    { id: "laporan", label: "Laporan", icon: <FileText className="w-4 h-4 text-[#c5a880]" /> },
+    { id: "users", label: "Manajemen User", icon: <UserPlus className="w-4 h-4 text-[#c5a880]" /> },
+    { id: "pengaturan", label: "Pengaturan", icon: <Settings className="w-4 h-4 text-[#c5a880]" /> },
+  ];
 
   return (
     <div className="min-h-screen bg-[#1e1e1e] text-[#cccccc] flex flex-col md:flex-row font-mono relative overflow-x-hidden">
-      {mobileMenuOpen && <div onClick={() => setMobileMenuOpen(false)} className="fixed inset-0 z-30 bg-black/60 transition-opacity md:hidden" />}
+      {mobileMenuOpen && <div onClick={() => setMobileMenuOpen(false)} className="fixed inset-0 z-30 bg-black/60 md:hidden" />}
 
-      <aside className={`fixed inset-y-0 left-0 z-40 w-64 bg-[#252526] text-[#cccccc] flex-shrink-0 flex flex-col justify-between py-6 px-4 border-r border-[#1e1e1e] transform transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:h-screen md:sticky md:top-0 ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}>
+      <aside className={`fixed inset-y-0 left-0 z-40 w-64 bg-[#252526] flex-shrink-0 flex flex-col justify-between py-6 px-4 border-r border-[#1e1e1e] transform transition-transform duration-300 md:translate-x-0 md:static md:h-screen md:sticky md:top-0 ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}>
         <div className="space-y-8">
           <div className="px-2 flex items-center justify-between">
             <div>
@@ -140,26 +181,19 @@ export default function AdminDashboard({
             <button onClick={() => setMobileMenuOpen(false)} className="p-1 text-[#cccccc] hover:text-[#c5a880] md:hidden cursor-pointer"><X className="w-5 h-5" /></button>
           </div>
           <nav className="space-y-1">
-            {(["dashboard","paket","jamaah","tracking","promo","laporan","pengaturan"] as TabType[]).map(tab => (
-              <button key={tab} onClick={() => { setActiveTab(tab); setMobileMenuOpen(false); }}
-                className={`w-full flex items-center gap-3 px-3.5 py-3 rounded-lg text-sm font-semibold cursor-pointer transition-all ${activeTab === tab ? "bg-[#37373d] text-white border-l-4 border-l-[#007acc]" : "hover:bg-[#2d2d2d] text-[#cccccc] hover:text-[#c5a880]"}`}>
-                {tab === "dashboard" && <BarChart3 className="w-4 h-4 text-[#c5a880]" />}
-                {tab === "paket" && <Briefcase className="w-4 h-4 text-[#c5a880]" />}
-                {tab === "jamaah" && <Users className="w-4 h-4 text-[#c5a880]" />}
-                {tab === "tracking" && <RefreshCw className="w-4 h-4 text-[#c5a880]" />}
-                {tab === "promo" && <FileText className="w-4 h-4 text-[#c5a880]" />}
-                {tab === "laporan" && <FileText className="w-4 h-4 text-[#c5a880]" />}
-                {tab === "pengaturan" && <Settings className="w-4 h-4 text-[#c5a880]" />}
-                <span className="capitalize">{tab === "dashboard" ? "Dashboard" : tab === "paket" ? "Paket Umroh" : tab === "jamaah" ? "Data Jamaah" : tab === "tracking" ? "Tracking Order" : tab === "promo" ? "Promo & Hub" : tab === "laporan" ? "Laporan" : "Pengaturan"}</span>
+            {navItems.map(item => (
+              <button key={item.id} onClick={() => { setActiveTab(item.id as TabType); setMobileMenuOpen(false); }}
+                className={`w-full flex items-center gap-3 px-3.5 py-3 rounded-lg text-sm font-semibold cursor-pointer transition-all ${activeTab === item.id ? "bg-[#37373d] text-white border-l-4 border-l-[#007acc]" : "hover:bg-[#2d2d2d] text-[#cccccc] hover:text-[#c5a880]"}`}>
+                {item.icon}<span>{item.label}</span>
               </button>
             ))}
           </nav>
         </div>
         <div className="pt-6 border-t border-[#1e1e1e] space-y-2">
-          <button onClick={() => { onGoToPublic(); setMobileMenuOpen(false); }} className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-bold text-gray-300 hover:text-white hover:bg-[#2d2d2d] transition-colors cursor-pointer">
+          <button onClick={() => { onGoToPublic(); setMobileMenuOpen(false); }} className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-bold text-gray-300 hover:text-white hover:bg-[#2d2d2d] cursor-pointer">
             <Globe className="w-4 h-4 text-[#c5a880]" /><span>Kunjungi Web Publik</span>
           </button>
-          <button onClick={() => { onLogout(); setMobileMenuOpen(false); }} className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-bold text-red-400 hover:text-white hover:bg-[#2d2d2d]/50 transition-colors cursor-pointer">
+          <button onClick={() => { onLogout(); setMobileMenuOpen(false); }} className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-bold text-red-400 hover:text-white hover:bg-[#2d2d2d]/50 cursor-pointer">
             <LogOut className="w-4 h-4" /><span>Keluar / Logout</span>
           </button>
         </div>
@@ -168,11 +202,11 @@ export default function AdminDashboard({
       <main className="flex-1 flex flex-col min-w-0">
         <div className="bg-[#252526] border-b border-[#1e1e1e] py-5 px-4 sm:px-8 flex items-center justify-between sticky top-0 z-20">
           <div className="flex items-center gap-3">
-            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-1 px-2 border border-[#2b2b2b] rounded-md bg-[#1e1e1e] text-[#c5a880] hover:text-white md:hidden cursor-pointer flex items-center justify-center">
+            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-1 px-2 border border-[#2b2b2b] rounded-md bg-[#1e1e1e] text-[#c5a880] hover:text-white md:hidden cursor-pointer">
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
             <span className="text-xs font-extrabold uppercase bg-[#1e1e1e] text-[#c5a880] border border-[#2b2b2b] px-3 py-1 rounded">Super Admin Mode</span>
-            <h1 className="text-lg font-bold text-white capitalize hidden sm:block">Sistem E-Catalogue & Manajemen Jamaah</h1>
+            <h1 className="text-lg font-bold text-white hidden sm:block">Sistem E-Catalogue & Manajemen Jamaah</h1>
           </div>
           <div className="flex items-center gap-4">
             <div className="text-right hidden md:block">
@@ -185,6 +219,7 @@ export default function AdminDashboard({
 
         <div className="p-6 sm:p-8 space-y-8 flex-1">
 
+          {/* DASHBOARD */}
           {activeTab === "dashboard" && (
             <div className="space-y-8">
               <h2 className="text-xl sm:text-2xl font-black text-gray-900">DASHBOARD ADMIN</h2>
@@ -220,52 +255,46 @@ export default function AdminDashboard({
             </div>
           )}
 
+          {/* PAKET */}
           {activeTab === "paket" && (
             <div className="space-y-8">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div>
-                  <h2 className="text-xl sm:text-2xl font-black text-gray-900">DATA PAKET UMROH</h2>
-                  <p className="text-xs text-gray-500 font-medium mt-0.5">Kelola, edit, atau tambah katalog paket umroh.</p>
-                </div>
+                <div><h2 className="text-xl sm:text-2xl font-black text-gray-900">DATA PAKET UMROH</h2></div>
                 {!isAddingPackage && (
                   <button onClick={() => { setEditingPackageId(null); setFormName(""); setFormPrice(28000000); setFormHotelMakkah(""); setFormHotelMadinah(""); setFormDescription(""); setIsAddingPackage(true); }}
-                    className="flex items-center justify-center gap-2 bg-[#0f5132] hover:bg-[#146c43] text-white font-extrabold text-xs px-4 py-3 rounded-lg shadow-sm cursor-pointer">
+                    className="flex items-center gap-2 bg-[#0f5132] hover:bg-[#146c43] text-white font-extrabold text-xs px-4 py-3 rounded-lg cursor-pointer">
                     <Plus className="w-4 h-4 text-[#c5a880]" /><span>+ Tambah Paket</span>
                   </button>
                 )}
               </div>
-
               {isAddingPackage && (
                 <div className="bg-white rounded-xl border border-gray-100 shadow-md overflow-hidden">
                   <div className="bg-emerald-800 text-white p-4 font-bold flex items-center justify-between">
-                    <span>{editingPackageId ? "Edit Paket Umroh" : "Tambah Paket Umroh"}</span>
+                    <span>{editingPackageId ? "Edit Paket" : "Tambah Paket"}</span>
                     <button onClick={resetForm} className="text-white hover:text-[#c5a880] cursor-pointer"><X className="w-5 h-5" /></button>
                   </div>
-                  <form onSubmit={handleSavePackage} className="p-6 space-y-6">
+                  <form onSubmit={handleSavePackage} className="p-6 space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-1.5"><label className="text-xs font-bold text-gray-700 block">Nama Paket *</label><input type="text" required value={formName} onChange={e => setFormName(e.target.value)} className="w-full text-xs px-3.5 py-2.5 border border-gray-200 rounded bg-white text-gray-800 focus:border-emerald-800 focus:outline-hidden" /></div>
-                      <div className="space-y-1.5"><label className="text-xs font-bold text-gray-700 block">Harga (Rupiah) *</label><input type="number" required value={formPrice} onChange={e => setFormPrice(Number(e.target.value))} className="w-full text-xs px-3.5 py-2.5 border border-gray-200 rounded bg-white text-gray-800 focus:border-emerald-800 focus:outline-hidden" /></div>
-                      <div className="space-y-1.5"><label className="text-xs font-bold text-gray-700 block">Durasi (Hari)</label><select value={formDuration} onChange={e => setFormDuration(Number(e.target.value))} className="w-full text-xs px-3.5 py-2.5 border border-gray-200 rounded bg-white text-gray-800 focus:outline-hidden"><option value={9}>9 Hari</option><option value={12}>12 Hari</option><option value={16}>16 Hari</option></select></div>
+                      <div className="space-y-1.5"><label className="text-xs font-bold text-gray-700 block">Nama Paket *</label><input type="text" required value={formName} onChange={e => setFormName(e.target.value)} className="w-full text-xs px-3.5 py-2.5 border border-gray-200 rounded bg-white text-gray-800 focus:outline-hidden focus:border-emerald-800" /></div>
+                      <div className="space-y-1.5"><label className="text-xs font-bold text-gray-700 block">Harga (Rp) *</label><input type="number" required value={formPrice} onChange={e => setFormPrice(Number(e.target.value))} className="w-full text-xs px-3.5 py-2.5 border border-gray-200 rounded bg-white text-gray-800 focus:outline-hidden focus:border-emerald-800" /></div>
+                      <div className="space-y-1.5"><label className="text-xs font-bold text-gray-700 block">Durasi</label><select value={formDuration} onChange={e => setFormDuration(Number(e.target.value))} className="w-full text-xs px-3.5 py-2.5 border border-gray-200 rounded bg-white text-gray-800 focus:outline-hidden"><option value={9}>9 Hari</option><option value={12}>12 Hari</option><option value={16}>16 Hari</option></select></div>
                       <div className="space-y-1.5"><label className="text-xs font-bold text-gray-700 block">Jadwal</label><input type="text" required value={formSchedule} onChange={e => setFormSchedule(e.target.value)} className="w-full text-xs px-3.5 py-2.5 border border-gray-200 rounded bg-white text-gray-800 focus:outline-hidden" /></div>
                       <div className="space-y-1.5"><label className="text-xs font-bold text-gray-700 block">Hotel Makkah *</label><input type="text" required value={formHotelMakkah} onChange={e => setFormHotelMakkah(e.target.value)} className="w-full text-xs px-3.5 py-2.5 border border-gray-200 rounded bg-white text-gray-800 focus:outline-hidden" /></div>
                       <div className="space-y-1.5"><label className="text-xs font-bold text-gray-700 block">Hotel Madinah *</label><input type="text" required value={formHotelMadinah} onChange={e => setFormHotelMadinah(e.target.value)} className="w-full text-xs px-3.5 py-2.5 border border-gray-200 rounded bg-white text-gray-800 focus:outline-hidden" /></div>
                       <div className="space-y-1.5"><label className="text-xs font-bold text-gray-700 block">Maskapai</label><select value={formMaskapai} onChange={e => setFormMaskapai(e.target.value)} className="w-full text-xs px-3.5 py-2.5 border border-gray-200 rounded bg-white text-gray-800 focus:outline-hidden"><option>Saudia Airlines</option><option>Garuda Indonesia</option><option>Batik Air</option><option>Lion Air</option></select></div>
-                      <div className="space-y-1.5"><label className="text-xs font-bold text-gray-700 block">URL Foto Cover</label><input type="text" value={formImage} onChange={e => setFormImage(e.target.value)} placeholder="Kosongkan untuk default" className="w-full text-xs px-3.5 py-2.5 border border-gray-200 rounded bg-white text-gray-800 focus:outline-hidden font-mono" /></div>
+                      <div className="space-y-1.5"><label className="text-xs font-bold text-gray-700 block">URL Foto</label><input type="text" value={formImage} onChange={e => setFormImage(e.target.value)} placeholder="Kosongkan untuk default" className="w-full text-xs px-3.5 py-2.5 border border-gray-200 rounded bg-white text-gray-800 focus:outline-hidden font-mono" /></div>
                     </div>
                     <div className="space-y-1.5"><label className="text-xs font-bold text-gray-700 block">Deskripsi</label><textarea rows={3} value={formDescription} onChange={e => setFormDescription(e.target.value)} className="w-full text-xs px-3.5 py-2.5 border border-gray-200 rounded bg-white text-gray-800 focus:outline-hidden" /></div>
                     <div className="flex items-center gap-2"><input type="checkbox" id="bs" checked={formBestSeller} onChange={e => setFormBestSeller(e.target.checked)} /><label htmlFor="bs" className="text-xs font-bold text-gray-700 cursor-pointer">Tandai sebagai Best Seller</label></div>
                     <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
                       <button type="button" onClick={resetForm} className="px-4 py-2 text-xs border border-gray-200 text-gray-600 font-bold hover:bg-gray-100 rounded">Batal</button>
-                      <button type="submit" className="px-5 py-2.5 bg-emerald-800 text-white font-bold text-xs hover:bg-emerald-900 rounded shadow-md">Simpan Paket</button>
+                      <button type="submit" className="px-5 py-2.5 bg-emerald-800 text-white font-bold text-xs hover:bg-emerald-900 rounded">Simpan Paket</button>
                     </div>
                   </form>
                 </div>
               )}
-
               <div className="bg-white rounded-xl shadow-xs border border-gray-100 p-6 space-y-4">
-                <div className="flex items-center justify-between gap-4">
-                  <div className="relative w-72"><Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" /><input type="text" placeholder="Cari paket..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="w-full pl-9 pr-3.5 py-2 border border-gray-200 text-xs rounded bg-white text-gray-800" /></div>
-                </div>
+                <div className="relative w-72"><Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" /><input type="text" placeholder="Cari paket..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="w-full pl-9 pr-3.5 py-2 border border-gray-200 text-xs rounded bg-white text-gray-800" /></div>
                 <div className="overflow-x-auto border border-gray-100 rounded-lg">
                   <table className="w-full text-left text-xs whitespace-nowrap">
                     <thead className="bg-[#0f5132]/5 text-emerald-950 font-extrabold uppercase border-b border-gray-100">
@@ -293,6 +322,7 @@ export default function AdminDashboard({
             </div>
           )}
 
+          {/* JAMAAH */}
           {activeTab === "jamaah" && (
             <div className="space-y-8">
               <div><h2 className="text-xl sm:text-2xl font-black text-gray-900">DATA JAMAAH & TRANSAKSI</h2></div>
@@ -303,7 +333,7 @@ export default function AdminDashboard({
                     <button onClick={() => setEditingBookingId(null)} className="text-gray-400 hover:text-gray-600"><X className="w-5 h-5" /></button>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div className="space-y-1"><label className="text-xs font-bold text-gray-600 block">Status Akun</label><select value={editBookingStatus} onChange={(e: any) => setEditBookingStatus(e.target.value)} className="w-full text-xs py-2 px-3 border border-gray-200 rounded bg-white text-gray-800"><option value="Pending">Pending</option><option value="Verifikasi">Verifikasi</option><option value="Proses">Proses</option><option value="Selesai">Selesai</option></select></div>
+                    <div className="space-y-1"><label className="text-xs font-bold text-gray-600 block">Status</label><select value={editBookingStatus} onChange={(e: any) => setEditBookingStatus(e.target.value)} className="w-full text-xs py-2 px-3 border border-gray-200 rounded bg-white text-gray-800"><option value="Pending">Pending</option><option value="Verifikasi">Verifikasi</option><option value="Proses">Proses</option><option value="Selesai">Selesai</option></select></div>
                     <div className="space-y-1"><label className="text-xs font-bold text-gray-600 block">Pembayaran</label><select value={editBookingPayment} onChange={(e: any) => setEditBookingPayment(e.target.value)} className="w-full text-xs py-2 px-3 border border-gray-200 rounded bg-white text-gray-800"><option value="Belum Bayar">Belum Bayar</option><option value="DP">DP</option><option value="Lunas">Lunas</option></select></div>
                     <div className="space-y-1"><label className="text-xs font-bold text-gray-600 block">No. HP</label><input type="text" value={editBookingPhone} onChange={e => setEditBookingPhone(e.target.value)} className="w-full text-xs py-2 px-3 border border-gray-200 rounded bg-white text-gray-800 font-mono" /></div>
                     <div className="space-y-1"><label className="text-xs font-bold text-gray-600 block">Progress Step</label><select value={editBookingStep} onChange={e => setEditBookingStep(Number(e.target.value))} className="w-full text-xs py-2 px-3 border border-gray-200 rounded bg-white text-gray-800"><option value={1}>1. Data Diterima</option><option value={2}>2. Verifikasi Pembayaran</option><option value={3}>3. Proses Visa</option><option value={4}>4. Jadwal Keberangkatan</option><option value={5}>5. Selesai</option></select></div>
@@ -344,6 +374,7 @@ export default function AdminDashboard({
             </div>
           )}
 
+          {/* TRACKING */}
           {activeTab === "tracking" && (
             <div className="space-y-8">
               <div><h2 className="text-xl sm:text-2xl font-black text-gray-900">KONTROL TIMELINE TRACKING</h2></div>
@@ -379,6 +410,7 @@ export default function AdminDashboard({
             </div>
           )}
 
+          {/* PROMO */}
           {activeTab === "promo" && (
             <div className="bg-white rounded-xl shadow-xs border border-gray-100 p-8 space-y-6">
               <h2 className="text-xl font-bold text-gray-900">Manajemen Kode Promo</h2>
@@ -392,6 +424,7 @@ export default function AdminDashboard({
             </div>
           )}
 
+          {/* LAPORAN */}
           {activeTab === "laporan" && (
             <div className="bg-white rounded-xl shadow-xs border border-gray-100 p-8 space-y-6">
               <h2 className="text-xl font-bold text-gray-900">Laporan & Berkas Transaksi</h2>
@@ -403,6 +436,112 @@ export default function AdminDashboard({
             </div>
           )}
 
+          {/* MANAJEMEN USER */}
+          {activeTab === "users" && (
+            <div className="space-y-8">
+              <div>
+                <h2 className="text-xl sm:text-2xl font-black text-gray-900">MANAJEMEN USER</h2>
+                <p className="text-xs text-gray-500 font-medium mt-0.5">Tambah atau hapus admin dan jamaah.</p>
+              </div>
+
+              {/* Form tambah user */}
+              <div className="bg-white rounded-xl border border-gray-100 shadow-md p-6 space-y-4">
+                <h3 className="font-bold text-gray-900 text-sm border-b pb-3">Tambah User Baru</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-gray-700 block">Nama Lengkap *</label>
+                    <input type="text" value={newUserName} onChange={e => setNewUserName(e.target.value)} placeholder="Nama lengkap" className="w-full text-xs px-3.5 py-2.5 border border-gray-200 rounded bg-white text-gray-800 focus:outline-hidden focus:border-emerald-800" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-gray-700 block">Email *</label>
+                    <input type="email" value={newUserEmail} onChange={e => setNewUserEmail(e.target.value)} placeholder="email@example.com" className="w-full text-xs px-3.5 py-2.5 border border-gray-200 rounded bg-white text-gray-800 focus:outline-hidden focus:border-emerald-800" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-gray-700 block">No. HP</label>
+                    <input type="text" value={newUserPhone} onChange={e => setNewUserPhone(e.target.value)} placeholder="08xx-xxxx-xxxx" className="w-full text-xs px-3.5 py-2.5 border border-gray-200 rounded bg-white text-gray-800 focus:outline-hidden focus:border-emerald-800" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-gray-700 block">Role</label>
+                    <select value={newUserRole} onChange={e => setNewUserRole(e.target.value as any)} className="w-full text-xs px-3.5 py-2.5 border border-gray-200 rounded bg-white text-gray-800 focus:outline-hidden">
+                      <option value="jamaah">Jamaah</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                  </div>
+                  {newUserRole === "admin" && (
+                    <div className="space-y-1.5 md:col-span-2">
+                      <label className="text-xs font-bold text-gray-700 block">Password (khusus admin) *</label>
+                      <input type="password" value={newUserPassword} onChange={e => setNewUserPassword(e.target.value)} placeholder="Password admin" className="w-full text-xs px-3.5 py-2.5 border border-gray-200 rounded bg-white text-gray-800 focus:outline-hidden focus:border-emerald-800" />
+                    </div>
+                  )}
+                </div>
+                <div className="flex justify-end pt-2">
+                  <button onClick={handleAddUser} className="px-5 py-2.5 bg-emerald-800 text-white font-bold text-xs hover:bg-emerald-900 rounded shadow-md cursor-pointer flex items-center gap-2">
+                    <UserPlus className="w-4 h-4" /><span>Tambah User</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Daftar Admin */}
+              <div className="bg-white rounded-xl shadow-xs border border-gray-100 p-6 space-y-4">
+                <h3 className="font-bold text-gray-900 text-sm border-b pb-3">Daftar Admin ({adminList.length})</h3>
+                <div className="overflow-x-auto border border-gray-100 rounded-lg">
+                  <table className="w-full text-left text-xs whitespace-nowrap">
+                    <thead className="bg-[#0f5132]/5 text-emerald-950 font-extrabold uppercase border-b border-gray-100">
+                      <tr><th className="py-3 px-4">Nama</th><th className="py-3 px-4">Email</th><th className="py-3 px-4">Role</th><th className="py-3 px-4 text-center">Aksi</th></tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100 text-gray-700">
+                      {adminList.map(admin => (
+                        <tr key={admin.id} className="hover:bg-gray-50">
+                          <td className="py-3 px-4 font-bold">{admin.name}</td>
+                          <td className="py-3 px-4">{admin.email}</td>
+                          <td className="py-3 px-4"><span className="bg-emerald-50 text-emerald-800 font-bold px-2 py-0.5 rounded text-[10px]">{admin.role}</span></td>
+                          <td className="py-3 px-4 text-center">
+                            <button onClick={async () => {
+                              if (window.confirm("Hapus admin ini?")) {
+                                await fetch(`${API}/admin/${admin.id}`, { method: 'DELETE' });
+                                setAdminList(prev => prev.filter(a => a.id !== admin.id));
+                              }
+                            }} className="p-1 px-2 bg-red-50 hover:bg-red-100 text-red-600 rounded border border-red-200 cursor-pointer text-[10px] font-bold">Hapus</button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Daftar Jamaah */}
+              <div className="bg-white rounded-xl shadow-xs border border-gray-100 p-6 space-y-4">
+                <h3 className="font-bold text-gray-900 text-sm border-b pb-3">Daftar Jamaah Terdaftar ({users.length})</h3>
+                <div className="overflow-x-auto border border-gray-100 rounded-lg">
+                  <table className="w-full text-left text-xs whitespace-nowrap">
+                    <thead className="bg-[#0f5132]/5 text-emerald-950 font-extrabold uppercase border-b border-gray-100">
+                      <tr><th className="py-3 px-4">Nama</th><th className="py-3 px-4">Email</th><th className="py-3 px-4">No. HP</th><th className="py-3 px-4 text-center">Aksi</th></tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100 text-gray-700">
+                      {users.map(u => (
+                        <tr key={u.id} className="hover:bg-gray-50">
+                          <td className="py-3 px-4 font-bold">{u.name}</td>
+                          <td className="py-3 px-4">{u.email}</td>
+                          <td className="py-3 px-4 font-mono">{u.phone}</td>
+                          <td className="py-3 px-4 text-center">
+                            <button onClick={async () => {
+                              if (window.confirm("Hapus jamaah ini?")) {
+                                await fetch(`${API}/jamaah/${u.id}`, { method: 'DELETE' });
+                                onUpdateBookings(bookings.filter(b => b.userEmail !== u.email));
+                              }
+                            }} className="p-1 px-2 bg-red-50 hover:bg-red-100 text-red-600 rounded border border-red-200 cursor-pointer text-[10px] font-bold">Hapus</button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* PENGATURAN */}
           {activeTab === "pengaturan" && (
             <div className="bg-white rounded-xl shadow-xs border border-gray-100 p-8 space-y-6">
               <h2 className="text-xl font-bold text-gray-900">Pengaturan Sistem</h2>
