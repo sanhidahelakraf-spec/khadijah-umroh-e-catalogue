@@ -289,7 +289,7 @@ React.useEffect(() => {
 
             <div className="rounded-2xl overflow-hidden h-96 relative border border-slate-200 shadow-lg">
               <img
-                src="https://images.unsplash.com/photo-1542856391-010fb87dcfed?q=80&w=800&auto=format&fit=crop"
+                src="https://drive.google.com/file/d/1FYcFgsenD1rBNYxs3yPV0RXjZGhiaTMu/view?usp=drivesdk"
                 alt="Muslim pilgrims at mosque courtyard"
                 className="w-full h-full object-cover"
                 referrerPolicy="no-referrer"
