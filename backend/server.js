@@ -220,6 +220,16 @@ app.get('/api/setup', (req, res) => {
     });
   });
 });
+// Insert admin
+app.post('/api/setup-admin', (req, res) => {
+  db.query(
+    "INSERT IGNORE INTO admin (id, email, name, password, role) VALUES ('admin-001', 'admin@khadijah.com', 'Admin Super', 'admin123', 'admin')",
+    (err) => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ success: true, message: 'Admin berhasil dibuat!' });
+    }
+  );
+});
 app.listen(PORT, () => {
   console.log(`Server berjalan di http://localhost:${PORT}`);
 });
