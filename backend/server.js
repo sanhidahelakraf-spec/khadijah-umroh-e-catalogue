@@ -230,6 +230,42 @@ app.post('/api/setup-admin', (req, res) => {
     }
   );
 });
+// Tambah admin baru
+app.post('/api/admin', (req, res) => {
+  const { id, email, name, password, role } = req.body;
+  db.query(
+    'INSERT IGNORE INTO admin (id, email, name, password, role) VALUES (?,?,?,?,?)',
+    [id || `admin-${Date.now()}`, email, name, password, role || 'admin'],
+    (err) => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ success: true });
+    }
+  );
+});
+
+// Hapus jamaah
+app.delete('/api/jamaah/:id', (req, res) => {
+  db.query('DELETE FROM jamaah WHERE id=?', [req.params.id], (err) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ success: true });
+  });
+});
+
+// Hapus admin
+app.delete('/api/admin/:id', (req, res) => {
+  db.query('DELETE FROM admin WHERE id=?', [req.params.id], (err) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ success: true });
+  });
+});
+
+// Get semua admin
+app.get('/api/admin', (req, res) => {
+  db.query('SELECT id, email, name, role FROM admin', (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(results);
+  });
+});
 app.listen(PORT, () => {
   console.log(`Server berjalan di http://localhost:${PORT}`);
 });
