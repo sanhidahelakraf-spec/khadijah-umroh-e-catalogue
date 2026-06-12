@@ -266,6 +266,9 @@ app.get('/api/admin', (req, res) => {
     res.json(results);
   });
 });
+fetch('https://khadijah-umroh-e-catalogue-production.up.railway.app/api/setup', {
+  method: 'GET'
+}).then(r=>r.json()).then(console.log)
 app.listen(PORT, () => {
   console.log(`Server berjalan di http://localhost:${PORT}`);
 });
