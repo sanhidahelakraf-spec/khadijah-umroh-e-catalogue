@@ -75,7 +75,7 @@ React.useEffect(() => {
   };
 
   // Triggered when client submits the online reservation form
-  const handleCreateBooking = (details: {
+ const handleCreateBooking = async (details: {
     fullName: string;
     phone: string;
     email: string;
@@ -83,11 +83,9 @@ React.useEffect(() => {
   }) => {
     if (!bookingModalPkg) return;
 
-    // Generate novel reservation code
     const orderNo = bookings.length + 1;
     const bCode = `UMR-2026-${orderNo.toString().padStart(3, "0")}`;
 
-    // 1. Declare database booking item
     const newBooking: Booking = {
       id: `booking-${Date.now()}`,
       bookingCode: bCode,
@@ -104,15 +102,15 @@ React.useEffect(() => {
       }),
       status: "Pending",
       paymentStatus: "Belum Bayar",
-      travelDate: "12 Mei 2026", // default upcoming travel block
-      trackingStep: 1, // Start at Data Diterima (Step 1)
+      travelDate: "12 Mei 2026",
+      trackingStep: 1,
       maskapai: bookingModalPkg.maskapai,
       hotelMakkah: bookingModalPkg.hotelMakkah,
       hotelMadinah: bookingModalPkg.hotelMadinah,
       duration: bookingModalPkg.duration,
     };
 
-    // 2. Validate/insert user credentials for seamless login later
+    // Simpan user baru ke database
     const userExist = users.some(u => u.email.toLowerCase() === details.email.toLowerCase());
     if (!userExist) {
       const newUser: User = {
@@ -123,13 +121,30 @@ React.useEffect(() => {
         phone: details.phone,
       };
       setUsers(prev => [...prev, newUser]);
+      fetch('https://khadijah-umroh-e-catalogue-production.up.railway.app/api/jamaah', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(newUser)
+      }).catch(() => {});
     }
+
+    // Simpan booking ke database Railway
+    fetch('https://khadijah-umroh-e-catalogue-production.up.railway.app/api/pesanan', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(newBooking)
+    }).catch(() => {});
+
+    // Kurangi kuota paket
+    fetch(`https://khadijah-umroh-e-catalogue-production.up.railway.app/api/paket/${bookingModalPkg.id}/booking`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'}
+    }).catch(() => {});
 
     setBookings(prev => [newBooking, ...prev]);
     setBookingModalPkg(null);
-    setSuccessBooking(newBooking); // Open premium booking success sheet
+    setSuccessBooking(newBooking);
   };
-
   // Demo Switcher fast triggers
   const handleFastLoginAdmin = () => {
     handleLoginSuccess("admin@khadijah.com", "admin");
