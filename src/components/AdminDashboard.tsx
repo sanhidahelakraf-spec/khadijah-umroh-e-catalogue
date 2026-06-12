@@ -549,7 +549,7 @@ export default function AdminDashboard({
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1"><label className="text-xs font-bold text-gray-600 block">Nama Travel</label><input type="text" defaultValue="Khadijah Travel Indonesia" className="w-full text-xs py-2 px-3 border border-gray-200 rounded" /></div>
                   <div className="space-y-1"><label className="text-xs font-bold text-gray-600 block">No. Izin PPIU</label><input type="text" defaultValue="PPIU No.1234/2021" className="w-full text-xs py-2 px-3 border border-gray-200 rounded" /></div>
-                  <div className="space-y-1"><label className="text-xs font-bold text-gray-600 block">No. WhatsApp</label><input type="text" defaultValue="+62 812-3456-7890" className="w-full text-xs py-2 px-3 border border-gray-200 rounded" /></div>
+                  <div className="space-y-1"><label className="text-xs font-bold text-gray-600 block">No. WhatsApp</label><input type="text" defaultValue=" +62 813-9965-384" className="w-full text-xs py-2 px-3 border border-gray-200 rounded" /></div>
                   <div className="space-y-1"><label className="text-xs font-bold text-gray-600 block">Minimal DP (%)</label><input type="text" defaultValue="50%" className="w-full text-xs py-2 px-3 border border-gray-200 rounded" /></div>
                 </div>
                 <button onClick={() => alert("Pengaturan disimpan!")} className="px-5 py-2 bg-emerald-800 hover:bg-emerald-950 text-white font-bold text-xs rounded cursor-pointer">Simpan Perubahan</button>
