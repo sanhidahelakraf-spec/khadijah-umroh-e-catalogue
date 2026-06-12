@@ -283,6 +283,21 @@ app.get('/api/setup-kuota', (req, res) => {
     }
   );
 });
+app.post('/api/setup-kuota2', (req, res) => {
+  db.query("SHOW COLUMNS FROM paket_umroh LIKE 'kuota'", (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (results.length > 0) {
+      return res.json({ success: true, message: 'Kolom kuota sudah ada!' });
+    }
+    db.query('ALTER TABLE paket_umroh ADD COLUMN kuota INT DEFAULT 50', (err2) => {
+      if (err2) return res.status(500).json({ error: err2.message });
+      db.query('UPDATE paket_umroh SET kuota = 50', (err3) => {
+        if (err3) return res.status(500).json({ error: err3.message });
+        res.json({ success: true, message: 'Kolom kuota berhasil ditambahkan dan diset 50!' });
+      });
+    });
+  });
+});
 app.listen(PORT, () => {
   console.log(`Server berjalan di http://localhost:${PORT}`);
 });
