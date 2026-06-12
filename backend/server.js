@@ -269,6 +269,20 @@ app.get('/api/admin', (req, res) => {
 fetch('https://khadijah-umroh-e-catalogue-production.up.railway.app/api/setup', {
   method: 'GET'
 }).then(r=>r.json()).then(console.log)
+// Setup kolom kuota
+app.get('/api/setup-kuota', (req, res) => {
+  db.query(
+    'ALTER TABLE paket_umroh ADD COLUMN IF NOT EXISTS kuota INT DEFAULT 50',
+    (err) => {
+      if (err) return res.status(500).json({ error: err.message });
+      // Set kuota default untuk semua paket
+      db.query('UPDATE paket_umroh SET kuota = 50 WHERE kuota IS NULL OR kuota = 0', (err2) => {
+        if (err2) return res.status(500).json({ error: err2.message });
+        res.json({ success: true, message: 'Kolom kuota berhasil ditambahkan!' });
+      });
+    }
+  );
+});
 app.listen(PORT, () => {
   console.log(`Server berjalan di http://localhost:${PORT}`);
 });
