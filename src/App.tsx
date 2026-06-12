@@ -128,20 +128,21 @@ React.useEffect(() => {
       }).catch(() => {});
     }
 
-    // Simpan booking ke database Railway
-    fetch('https://khadijah-umroh-e-catalogue-production.up.railway.app/api/pesanan', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(newBooking)
-    }).catch(() => {});
-
-    // Kurangi kuota paket
-    fetch(`https://khadijah-umroh-e-catalogue-production.up.railway.app/api/paket/${bookingModalPkg.id}/booking`, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'}
-    }).catch(() => {});
-
     setBookings(prev => [newBooking, ...prev]);
+    setBookings(prev => [newBooking, ...prev]);
+
+// Simpan booking ke database Railway
+fetch('https://khadijah-umroh-e-catalogue-production.up.railway.app/api/pesanan', {
+  method: 'POST',
+  headers: {'Content-Type': 'application/json'},
+  body: JSON.stringify(newBooking)
+}).catch(() => {});
+
+// Kurangi kuota paket otomatis
+fetch(`https://khadijah-umroh-e-catalogue-production.up.railway.app/api/paket/${bookingModalPkg.id}/booking`, {
+  method: 'POST',
+  headers: {'Content-Type': 'application/json'}
+}).catch(() => {});
     setBookingModalPkg(null);
     setSuccessBooking(newBooking);
   };
