@@ -284,7 +284,7 @@ fetch(`https://khadijah-umroh-e-catalogue-production.up.railway.app/api/paket/${
                 Penyelenggara Perjalanan Ibadah Umroh (PPIU) Resmi Terbaik
               </h2>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-light">
-                Khadijah Travel Indonesia didirikan dengan visi melayani tamu-tamu Allah SWT dengan dedikasi tinggi, kejujuran, dan kehangatan keluarga. Merupakan PPIU berizin resmi dari Kementerian Agama RI, menjamin keamanan berkas paspor, akurasi visa, kenyamanan kabin penerbangan langsung, serta mutawwif mutasertifikasi syariah di bawah bimbingan ustadz ahli.
+                PT.Khadijah Travel Indonesiadidirikan dengan visi melayani tamu-tamu Allah SWT dengan dedikasi tinggi, kejujuran, dan kehangatan keluarga. Merupakan PPIU berizin resmi dari Kementerian Agama RI, menjamin keamanan berkas paspor, akurasi visa, kenyamanan kabin penerbangan langsung, serta mutawwif mutasertifikasi syariah di bawah bimbingan ustadz ahli.
               </p>
               
               <div className="space-y-3.5 pt-2">
@@ -387,15 +387,15 @@ fetch(`https://khadijah-umroh-e-catalogue-production.up.railway.app/api/paket/${
                 <ul className="space-y-3 text-xs text-stone-400 font-light">
                   <li className="flex items-start gap-2">
                     <MapPin className="w-4 h-4 text-[#c5a880] flex-shrink-0 mt-0.5" />
-                    <span>Gedung Khadijah Lt. 1-2, Jl. Thamrin No. 45, Menteng, DKI Jakarta Kode Pos 10310</span>
+                    <span>Perumahan Poris Centrum No B23, RT.001/RW.007, Cipondoh Indah, Kec. Cipondoh, Kota Tangerang, Banten 15148</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <Phone className="w-4 h-4 text-[#c5a880] flex-shrink-0" />
-                    <span> +62 813-9965-384 (WhatsApp)</span>
+                    <span> +62 812-3456-7890 (WhatsApp)</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <Mail className="w-4 h-4 text-[#c5a880] flex-shrink-0" />
-                    <span>info@khadijahtravel.id</span>
+                    <span>khadijahtravelid@gmail.com</span>
                   </li>
                 </ul>
               </div>
@@ -406,11 +406,11 @@ fetch(`https://khadijah-umroh-e-catalogue-production.up.railway.app/api/paket/${
                 <ul className="space-y-2.5 text-xs text-stone-400 font-light">
                   <li className="flex items-center gap-2">
                     <Clock className="w-4 h-4 text-[#c5a880]" />
-                    <span>Senin - Jum'at: 08:30 - 17:00</span>
+                    <span>Senin - Sabtu: 08:30 - 17:00</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <Clock className="w-4 h-4 text-[#c5a880]" />
-                    <span>Sabtu: 08:30 - 13:00</span>
+                    <span>Ahad: (Janji Temu):</span>
                   </li>
                   <li className="text-[10px] text-amber-500 font-bold bg-[#1e1e1e] border border-[#2b2b2b] rounded p-2.5">
                     🚨 Pelayanan darurat darat Madinah/Makkah beroperasi 24 Jam Non-Stop selama musim umroh aktif.
@@ -421,7 +421,7 @@ fetch(`https://khadijah-umroh-e-catalogue-production.up.railway.app/api/paket/${
             </div>
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-[#1e1e1e] mt-12 pt-6 text-center text-xs text-stone-500 font-medium">
-              <p>© 2026 Khadijah Travel Indonesia (Sistem E-Catalogue & Manajemen Umroh Syariah). All Rights Reserved.</p>
+              <p>© 2025 Khadijah Travel Indonesia (Sistem E-Catalogue & Manajemen Umroh Syariah). All Rights Reserved.</p>
             </div>
           </footer>
 
@@ -518,7 +518,7 @@ fetch(`https://khadijah-umroh-e-catalogue-production.up.railway.app/api/paket/${
                 Tutup
               </button>
               <a
-                href="https://wa.me/6281234567890"
+                href="https://wa.me/628139965384"
                 target="_blank"
                 rel="noreferrer"
                 className="flex-1 py-2.5 bg-[#112a1d] hover:bg-[#193f2c] text-[#c5a880] text-xs font-bold rounded-lg cursor-pointer block text-center border border-[#c5a880]/30"
