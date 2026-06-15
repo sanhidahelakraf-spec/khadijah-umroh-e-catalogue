@@ -75,7 +75,7 @@ React.useEffect(() => {
   };
 
   // Triggered when client submits the online reservation form
- const handleCreateBooking = async (details: {
+const handleCreateBooking = async (details: {
     fullName: string;
     phone: string;
     email: string;
@@ -96,9 +96,7 @@ React.useEffect(() => {
       packageName: bookingModalPkg.name,
       price: bookingModalPkg.price,
       date: new Date().toLocaleDateString("id-ID", {
-        day: "2-digit",
-        month: "long",
-        year: "numeric",
+        day: "2-digit", month: "long", year: "numeric",
       }),
       status: "Pending",
       paymentStatus: "Belum Bayar",
@@ -110,7 +108,14 @@ React.useEffect(() => {
       duration: bookingModalPkg.duration,
     };
 
-    // Simpan user baru ke database
+    // 1. Simpan pesanan ke database Railway
+    await fetch('https://khadijah-umroh-e-catalogue-production.up.railway.app/api/pesanan', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(newBooking)
+    }).catch(() => {});
+
+    // 2. Simpan jamaah baru ke database jika belum ada
     const userExist = users.some(u => u.email.toLowerCase() === details.email.toLowerCase());
     if (!userExist) {
       const newUser: User = {
@@ -120,29 +125,22 @@ React.useEffect(() => {
         role: "jamaah",
         phone: details.phone,
       };
-      setUsers(prev => [...prev, newUser]);
-      fetch('https://khadijah-umroh-e-catalogue-production.up.railway.app/api/jamaah', {
+      await fetch('https://khadijah-umroh-e-catalogue-production.up.railway.app/api/jamaah', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(newUser)
       }).catch(() => {});
+      setUsers(prev => [...prev, newUser]);
     }
 
-    setBookings(prev => [newBooking, ...prev]);
-    setBookings(prev => [newBooking, ...prev]);
+    // 3. Kurangi kuota paket
+    await fetch(`https://khadijah-umroh-e-catalogue-production.up.railway.app/api/paket/${bookingModalPkg.id}/booking`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'}
+    }).catch(() => {});
 
-// Simpan booking ke database Railway
-fetch('https://khadijah-umroh-e-catalogue-production.up.railway.app/api/pesanan', {
-  method: 'POST',
-  headers: {'Content-Type': 'application/json'},
-  body: JSON.stringify(newBooking)
-}).catch(() => {});
-
-// Kurangi kuota paket otomatis
-fetch(`https://khadijah-umroh-e-catalogue-production.up.railway.app/api/paket/${bookingModalPkg.id}/booking`, {
-  method: 'POST',
-  headers: {'Content-Type': 'application/json'}
-}).catch(() => {});
+    // 4. Update state lokal
+    setBookings(prev => [newBooking, ...prev]);
     setBookingModalPkg(null);
     setSuccessBooking(newBooking);
   };
@@ -391,7 +389,7 @@ fetch(`https://khadijah-umroh-e-catalogue-production.up.railway.app/api/paket/${
                   </li>
                   <li className="flex items-center gap-2">
                     <Phone className="w-4 h-4 text-[#c5a880] flex-shrink-0" />
-                    <span> +62 812-3456-7890 (WhatsApp)</span>
+                    <span> +62 813-9965-384 (WhatsApp)</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <Mail className="w-4 h-4 text-[#c5a880] flex-shrink-0" />
