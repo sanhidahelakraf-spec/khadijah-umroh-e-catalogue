@@ -42,6 +42,12 @@ React.useEffect(() => {
     })
     .catch(() => {});
 }, []);
+const refreshPackages = () => {
+  fetch('https://khadijah-umroh-e-catalogue-production.up.railway.app/api/paket')
+    .then(r => r.json())
+    .then(data => { if (Array.isArray(data) && data.length > 0) setPackages(data); })
+    .catch(() => {});
+};
 
   // Active Screen View: "public" | "login" | "admin" | "jamaah"
   const [activeView, setActiveView] = React.useState<"public" | "login" | "admin" | "jamaah">("public");
@@ -169,7 +175,10 @@ const handleCreateBooking = async (details: {
           packages={packages}
           bookings={bookings}
           users={users}
-          onUpdatePackages={setPackages}
+          onUpdatePackages={(pkgs) => {
+  setPackages(pkgs);
+  setTimeout(() => refreshPackages(), 500);
+}}
           onUpdateBookings={setBookings}
           onLogout={handleLogout}
           onGoToPublic={() => setActiveView("public")}
