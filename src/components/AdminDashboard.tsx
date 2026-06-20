@@ -105,9 +105,12 @@ export default function AdminDashboard({
     setFormImage(pkg.image); setFormBestSeller(!!pkg.bestSeller); setIsAddingPackage(true);
   };
 
-  const handleDeletePackage = (id: string) => {
-    if (window.confirm("Apakah Anda yakin ingin menghapus paket ini?"))
+ const handleDeletePackage = async (id: string) => {
+    if (window.confirm("Apakah Anda yakin ingin menghapus paket ini?")) {
+      await fetch(`${API}/paket/${id}`, { method: 'DELETE' })
+        .catch(() => {});
       onUpdatePackages(packages.filter(p => p.id !== id));
+    }
   };
 
   const startEditBooking = (b: Booking) => {
