@@ -68,7 +68,7 @@ export default function TrackingSearchModal({ bookings, onClose }: TrackingSearc
                 Cek Status
               </button>
             </div>
-            <span className="text-[10px] text-gray-400 block">💡 Tips: Anda dapat mencoba kode demo: <strong className="text-[#0f5132] font-bold font-mono">UMR-2026-001</strong> untuk menguji fungsionalitas pencarian.</span>
+          
           </form>
 
           {/* Results Block */}
