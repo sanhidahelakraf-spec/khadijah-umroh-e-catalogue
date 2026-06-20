@@ -32,7 +32,7 @@ export const initialPackages: UmrohPackage[] = [
   {
     id: "pkg-premium",
     name: "Umroh Premium",
-    duration: 12,``
+    duration: 12,
     price: 35000000,
     schedule: "Juni 2026",
     status: "Aktif",
