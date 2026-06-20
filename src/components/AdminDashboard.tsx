@@ -128,10 +128,12 @@ export default function AdminDashboard({
     setEditingBookingId(null);
   };
 
-  const handleDeleteBooking = (id: string) => {
-    if (window.confirm("Hapus data jamaah ini?")) onUpdateBookings(bookings.filter(b => b.id !== id));
+const handleDeleteBooking = async (id: string) => {
+    if (window.confirm("Hapus data jamaah ini?")) {
+      await fetch(`${API}/pesanan/${id}`, { method: 'DELETE' }).catch(() => {});
+      onUpdateBookings(bookings.filter(b => b.id !== id));
+    }
   };
-
   const handleUpdateStepDirectly = async (id: string, step: number) => {
     const booking = bookings.find(b => b.id === id);
     if (!booking) return;

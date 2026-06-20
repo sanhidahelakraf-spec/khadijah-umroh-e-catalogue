@@ -79,6 +79,12 @@ app.put('/api/pesanan/:id', (req, res) => {
     }
   );
 });
+app.delete('/api/pesanan/:id', (req, res) => {
+  db.query('DELETE FROM pesanan WHERE id=?', [req.params.id], (err) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ success: true });
+  });
+});
 
 // ==================== JAMAAH / USERS ====================
 app.get('/api/jamaah', (req, res) => {
