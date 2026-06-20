@@ -31,7 +31,7 @@ React.useEffect(() => {
   fetch('https://khadijah-umroh-e-catalogue-production.up.railway.app/api/pesanan')
     .then(r => r.json())
     .then(data => {
-      if (Array.isArray(data) && data.length > 0) setBookings(data);
+      if (Array.isArray(data)) setBookings(data);
     })
     .catch(() => {});
 
