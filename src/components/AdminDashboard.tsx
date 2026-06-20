@@ -107,8 +107,7 @@ export default function AdminDashboard({
 
  const handleDeletePackage = async (id: string) => {
     if (window.confirm("Apakah Anda yakin ingin menghapus paket ini?")) {
-      await fetch(`${API}/paket/${id}`, { method: 'DELETE' })
-        .catch(() => {});
+      await fetch(`${API}/paket/${id}`, { method: 'DELETE' }).catch(() => {});
       onUpdatePackages(packages.filter(p => p.id !== id));
     }
   };
