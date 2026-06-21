@@ -58,9 +58,9 @@ app.get('/api/pesanan', (req, res) => {
 app.post('/api/pesanan', (req, res) => {
   const b = req.body;
   db.query(
-    `INSERT INTO pesanan (id, bookingCode, userEmail, userName, userPhone, packageId, packageName, price, date, status, paymentStatus, travelDate, trackingStep, maskapai, hotelMakkah, hotelMadinah, duration)
-     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
-    [b.id, b.bookingCode, b.userEmail, b.userName, b.userPhone, b.packageId, b.packageName, b.price, b.date, b.status, b.paymentStatus, b.travelDate, b.trackingStep, b.maskapai, b.hotelMakkah, b.hotelMadinah, b.duration],
+    `INSERT INTO pesanan (id, bookingCode, userEmail, userName, userPhone, packageId, packageName, price, date, status, paymentStatus, travelDate, trackingStep, maskapai, hotelMakkah, hotelMadinah, duration, password)
+     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+    [b.id, b.bookingCode, b.userEmail, b.userName, b.userPhone, b.packageId, b.packageName, b.price, b.date, b.status, b.paymentStatus, b.travelDate, b.trackingStep, b.maskapai, b.hotelMakkah, b.hotelMadinah, b.duration, b.password || null],
     (err) => {
       if (err) return res.status(500).json({ error: err.message });
       res.json({ success: true });
@@ -316,6 +316,20 @@ app.post('/api/setup-password', (req, res) => {
     });
   });
 });
+
+app.post('/api/login-jamaah', (req, res) => {
+  const { email, password } = req.body;
+  db.query(
+    'SELECT * FROM pesanan WHERE userEmail=? AND password=? LIMIT 1',
+    [email, password],
+    (err, results) => {
+      if (err) return res.status(500).json({ error: err.message });
+      if (results.length === 0) return res.status(401).json({ message: 'Email atau password salah' });
+      res.json({ message: 'Login berhasil', user: results[0] });
+    }
+  );
+});
+
 app.listen(PORT, () => {
   console.log(`Server berjalan di http://localhost:${PORT}`);
 });

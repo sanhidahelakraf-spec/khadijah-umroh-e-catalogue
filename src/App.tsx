@@ -112,6 +112,7 @@ const handleCreateBooking = async (details: {
       hotelMakkah: bookingModalPkg.hotelMakkah,
       hotelMadinah: bookingModalPkg.hotelMadinah,
       duration: bookingModalPkg.duration,
+      password: details.password,
     };
 
     // 1. Simpan pesanan ke database Railway

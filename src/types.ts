@@ -15,6 +15,7 @@ export interface UmrohPackage {
 
 export interface Booking {
   id: string;
+  password?: string;
   bookingCode: string; // e.g. "UMR-2026-001"
   userEmail: string;
   userName: string;
