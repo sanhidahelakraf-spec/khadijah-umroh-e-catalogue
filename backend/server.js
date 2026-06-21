@@ -330,23 +330,17 @@ app.post('/api/login-jamaah', (req, res) => {
   );
 });
 
-// Setup kolom promo
+// Setup tabel promo
 app.post('/api/setup-promo', (req, res) => {
-  db.query("SHOW COLUMNS FROM promo LIKE 'title'", (err, results) => {
+  db.query(`CREATE TABLE IF NOT EXISTS promo (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(200),
+    description TEXT,
+    discountAmount BIGINT,
+    isActive TINYINT(1) DEFAULT 0
+  )`, (err) => {
     if (err) return res.status(500).json({ error: err.message });
-    if (results.length > 0) {
-      return res.json({ success: true, message: 'Kolom promo sudah ada!' });
-    }
-    db.query(`ALTER TABLE promo 
-      ADD COLUMN title VARCHAR(200),
-      ADD COLUMN description TEXT,
-      ADD COLUMN discountAmount BIGINT,
-      ADD COLUMN isActive TINYINT(1) DEFAULT 0`,
-      (err2) => {
-        if (err2) return res.status(500).json({ error: err2.message });
-        res.json({ success: true, message: 'Kolom promo berhasil ditambahkan!' });
-      }
-    );
+    res.json({ success: true, message: 'Tabel promo berhasil dibuat!' });
   });
 });
 
