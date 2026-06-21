@@ -304,6 +304,18 @@ app.post('/api/setup-kuota2', (req, res) => {
     });
   });
 });
+app.post('/api/setup-password', (req, res) => {
+  db.query("SHOW COLUMNS FROM pesanan LIKE 'password'", (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (results.length > 0) {
+      return res.json({ success: true, message: 'Kolom password sudah ada di pesanan!' });
+    }
+    db.query('ALTER TABLE pesanan ADD COLUMN password VARCHAR(100)', (err2) => {
+      if (err2) return res.status(500).json({ error: err2.message });
+      res.json({ success: true, message: 'Kolom password berhasil ditambahkan ke pesanan!' });
+    });
+  });
+});
 app.listen(PORT, () => {
   console.log(`Server berjalan di http://localhost:${PORT}`);
 });
