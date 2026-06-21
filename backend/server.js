@@ -330,6 +330,58 @@ app.post('/api/login-jamaah', (req, res) => {
   );
 });
 
+// Setup kolom promo
+app.post('/api/setup-promo', (req, res) => {
+  db.query("SHOW COLUMNS FROM promo LIKE 'title'", (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (results.length > 0) {
+      return res.json({ success: true, message: 'Kolom promo sudah ada!' });
+    }
+    db.query(`ALTER TABLE promo 
+      ADD COLUMN title VARCHAR(200),
+      ADD COLUMN description TEXT,
+      ADD COLUMN discountAmount BIGINT,
+      ADD COLUMN isActive TINYINT(1) DEFAULT 0`,
+      (err2) => {
+        if (err2) return res.status(500).json({ error: err2.message });
+        res.json({ success: true, message: 'Kolom promo berhasil ditambahkan!' });
+      }
+    );
+  });
+});
+
+// Get promo aktif
+app.get('/api/promo/active', (req, res) => {
+  db.query('SELECT * FROM promo WHERE isActive=1 ORDER BY id DESC LIMIT 1', (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(results[0] || null);
+  });
+});
+
+// Set/update promo
+app.post('/api/promo/set', (req, res) => {
+  const { title, description, discountAmount } = req.body;
+  // Matikan semua promo lama
+  db.query('UPDATE promo SET isActive=0', () => {
+    db.query(
+      'INSERT INTO promo (title, description, discountAmount, isActive) VALUES (?,?,?,1)',
+      [title, description, discountAmount],
+      (err) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ success: true });
+      }
+    );
+  });
+});
+
+// Matikan promo
+app.post('/api/promo/deactivate', (req, res) => {
+  db.query('UPDATE promo SET isActive=0', (err) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ success: true });
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`Server berjalan di http://localhost:${PORT}`);
 });

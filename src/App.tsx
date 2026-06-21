@@ -66,6 +66,14 @@ const refreshPackages = () => {
   const [consultModalOpen, setConsultModalOpen] = React.useState(false);
   const [trackingModalOpen, setTrackingModalOpen] = React.useState(false);
   const [successBooking, setSuccessBooking] = React.useState<Booking | null>(null);
+  const [activePromo, setActivePromo] = React.useState<any>(null);
+
+React.useEffect(() => {
+  fetch('https://khadijah-umroh-e-catalogue-production.up.railway.app/api/promo/active')
+    .then(r => r.json())
+    .then(data => setActivePromo(data))
+    .catch(() => {});
+}, []);
 
   // --- 2. Action & Authentication Handlers ---
   const handleLoginSuccess = (email: string, role: "admin" | "jamaah") => {
@@ -259,26 +267,40 @@ const handleCreateBooking = async (details: {
           <section id="promo-section" className="py-20 bg-[#0f5132] text-white relative overflow-hidden shadow-inner">
             <div className="absolute inset-0 opacity-5 bg-[linear-gradient(rgba(240,240,240,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(240,240,240,0.1)_1px,transparent_1px)] bg-[size:32px_32px]" />
             <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
-              <div className="md:col-span-8 space-y-4 text-center md:text-left">
-                <span className="text-xs font-bold uppercase tracking-wider text-[#c5a880] block">Special Offers</span>
-                <h2 className="text-2xl sm:text-3xl font-black tracking-tight leading-tight text-white">
-                  Subsidi Khusus Diskon Ramadhan Potongan Rp 3.000.000,-
-                </h2>
-                <p className="text-xs sm:text-sm text-slate-100 font-light leading-relaxed">
-                  Dapatkan potongan subsidi dana keberangkatan bagi pendaftaran bertingkat keluarga (min. 3 jamaah) untuk keberangkatan Mei/Juni 2026. S&K berlaku.
-                </p>
-              </div>
-              <div className="md:col-span-4 flex justify-center">
-                <button
-                  onClick={() => {
-                    const premPkg = packages.find(p => p.id === "pkg-premium") || packages[0];
-                    setBookingModalPkg(premPkg);
-                  }}
-                  className="px-8 py-4 bg-white hover:bg-slate-100 text-[#0f5132] font-black rounded-xl text-xs sm:text-sm tracking-wider uppercase shadow-xl transition-all cursor-pointer border border-[#c5a880]/40"
-                >
-                  Klaim Diskon Sekarang
-                </button>
-              </div>
+              {activePromo ? (
+                <>
+                  <div className="md:col-span-8 space-y-4 text-center md:text-left">
+                    <span className="text-xs font-bold uppercase tracking-wider text-[#c5a880] block">Special Offers</span>
+                    <h2 className="text-2xl sm:text-3xl font-black tracking-tight leading-tight text-white">
+                      {activePromo.title} {activePromo.discountAmount ? `Potongan ${new Intl.NumberFormat("id-ID", {style:"currency",currency:"IDR",maximumFractionDigits:0}).format(activePromo.discountAmount)}` : ""}
+                    </h2>
+                    <p className="text-xs sm:text-sm text-slate-100 font-light leading-relaxed">
+                      {activePromo.description}
+                    </p>
+                  </div>
+                  <div className="md:col-span-4 flex justify-center">
+                    <button
+                      onClick={() => {
+                        const premPkg = packages.find(p => p.id === "pkg-premium") || packages[0];
+                        setBookingModalPkg(premPkg);
+                      }}
+                      className="px-8 py-4 bg-white hover:bg-slate-100 text-[#0f5132] font-black rounded-xl text-xs sm:text-sm tracking-wider uppercase shadow-xl transition-all cursor-pointer border border-[#c5a880]/40"
+                    >
+                      Klaim Diskon Sekarang
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="md:col-span-12 text-center space-y-3 py-4">
+                  <span className="text-xs font-bold uppercase tracking-wider text-[#c5a880] block">Special Offers</span>
+                  <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white">
+                    Diskon Belum Tersedia Saat Ini
+                  </h2>
+                  <p className="text-xs sm:text-sm text-slate-200 font-light max-w-lg mx-auto">
+                    Promo dan diskon spesial akan kami informasikan segera. Pantau terus halaman ini untuk penawaran menarik berikutnya.
+                  </p>
+                </div>
+              )}
             </div>
           </section>
 

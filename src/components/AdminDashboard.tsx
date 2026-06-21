@@ -33,6 +33,35 @@ export default function AdminDashboard({
   const [isAddingPackage, setIsAddingPackage] = React.useState(false);
   const [editingPackageId, setEditingPackageId] = React.useState<string | null>(null);
   const [promoCode, setPromoCode] = React.useState("");
+  const [activePromo, setActivePromo] = React.useState<any>(null);
+const [promoTitle, setPromoTitle] = React.useState("");
+const [promoDescription, setPromoDescription] = React.useState("");
+const [promoDiscountAmount, setPromoDiscountAmount] = React.useState(3000000);
+
+React.useEffect(() => {
+  fetch(`${API}/promo/active`)
+    .then(r => r.json())
+    .then(data => setActivePromo(data))
+    .catch(() => {});
+}, []);
+
+const handleSetPromo = async () => {
+  if (!promoTitle || !promoDescription) return alert("Judul dan deskripsi wajib diisi!");
+  await fetch(`${API}/promo/set`, {
+    method: 'POST', headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ title: promoTitle, description: promoDescription, discountAmount: promoDiscountAmount })
+  });
+  setActivePromo({ title: promoTitle, description: promoDescription, discountAmount: promoDiscountAmount });
+  setPromoTitle(""); setPromoDescription(""); setPromoDiscountAmount(3000000);
+  alert("Promo berhasil diaktifkan!");
+};
+
+const handleDeactivatePromo = async () => {
+  if (window.confirm("Matikan promo ini?")) {
+    await fetch(`${API}/promo/deactivate`, { method: 'POST' });
+    setActivePromo(null);
+  }
+};
   const [formName, setFormName] = React.useState("");
   const [formPrice, setFormPrice] = React.useState(28000000);
   const [formDuration, setFormDuration] = React.useState(12);
@@ -416,13 +445,39 @@ const handleDeleteBooking = async (id: string) => {
 
           {/* PROMO */}
           {activeTab === "promo" && (
-            <div className="bg-white rounded-xl shadow-xs border border-gray-100 p-8 space-y-6">
-              <h2 className="text-xl font-bold text-gray-900">Manajemen Kode Promo</h2>
-              <div className="space-y-4 max-w-md">
-                <div className="p-4 bg-amber-50 border border-amber-200 text-[#b08f5c] text-xs rounded-lg font-bold">Kode Promo Aktif: DISKON RAMADHAN (Rp 3.000.000,-)</div>
-                <div className="flex gap-2">
-                  <input type="text" placeholder="Kode promo baru..." value={promoCode} onChange={e => setPromoCode(e.target.value)} className="w-full text-xs py-2.5 px-3 border border-gray-200 rounded uppercase font-mono" />
-                  <button onClick={() => { if(promoCode) { alert(`Promo [${promoCode.toUpperCase()}] ditambahkan!`); setPromoCode(""); }}} className="px-4 py-2 bg-emerald-800 text-white font-bold text-xs rounded hover:bg-emerald-950 cursor-pointer">Kirim</button>
+            <div className="space-y-8">
+              <div>
+                <h2 className="text-xl sm:text-2xl font-black text-gray-900">MANAJEMEN PROMO</h2>
+                <p className="text-xs text-gray-500 font-medium mt-0.5">Atur banner diskon yang tampil di halaman publik.</p>
+              </div>
+
+              {activePromo && (
+                <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs rounded-lg font-bold flex items-center justify-between">
+                  <span>Promo Aktif: {activePromo.title}</span>
+                  <button onClick={handleDeactivatePromo} className="px-3 py-1 bg-red-50 hover:bg-red-100 text-red-600 rounded border border-red-200 text-[10px] font-bold cursor-pointer">
+                    Matikan Promo
+                  </button>
+                </div>
+              )}
+
+              <div className="bg-white rounded-xl border border-gray-100 shadow-md p-6 space-y-4">
+                <h3 className="font-bold text-gray-900 text-sm border-b pb-3">Buat / Update Promo</h3>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-gray-700 block">Judul Promo *</label>
+                  <input type="text" value={promoTitle} onChange={e => setPromoTitle(e.target.value)} placeholder="Contoh: Subsidi Khusus Diskon Ramadhan" className="w-full text-xs px-3.5 py-2.5 border border-gray-200 rounded bg-white text-gray-800 focus:outline-hidden focus:border-emerald-800" />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-gray-700 block">Deskripsi Promo *</label>
+                  <textarea rows={3} value={promoDescription} onChange={e => setPromoDescription(e.target.value)} placeholder="Contoh: Dapatkan potongan subsidi dana keberangkatan..." className="w-full text-xs px-3.5 py-2.5 border border-gray-200 rounded bg-white text-gray-800 focus:outline-hidden focus:border-emerald-800" />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-gray-700 block">Jumlah Diskon (Rp) *</label>
+                  <input type="number" value={promoDiscountAmount} onChange={e => setPromoDiscountAmount(Number(e.target.value))} placeholder="3000000" className="w-full text-xs px-3.5 py-2.5 border border-gray-200 rounded bg-white text-gray-800 focus:outline-hidden focus:border-emerald-800" />
+                </div>
+                <div className="flex justify-end pt-2">
+                  <button onClick={handleSetPromo} className="px-5 py-2.5 bg-emerald-800 text-white font-bold text-xs hover:bg-emerald-900 rounded shadow-md cursor-pointer">
+                    Aktifkan Promo
+                  </button>
                 </div>
               </div>
             </div>
