@@ -17,13 +17,12 @@ export default function LoginView({ onLoginSuccess, onBackToPublic }: LoginViewP
   const [validationError, setValidationError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
 
- const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setValidationError("");
     setLoading(true);
 
     try {
-      // Cek admin dulu
       const adminRes = await fetch(`${API}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -38,7 +37,6 @@ export default function LoginView({ onLoginSuccess, onBackToPublic }: LoginViewP
         }
       }
 
-      // Cek jamaah (harus sudah pernah booking dengan email & password yang sesuai)
       const jamaahRes = await fetch(`${API}/login-jamaah`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -57,24 +55,11 @@ export default function LoginView({ onLoginSuccess, onBackToPublic }: LoginViewP
       setLoading(false);
     }
   };
-    // Cek jamaah (harus sudah pernah booking dengan email & password yang sesuai)
-const jamaahRes = await fetch(`${API}/login-jamaah`, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ email, password })
-});
-
-if (jamaahRes.ok) {
-  onLoginSuccess(email, "jamaah");
-  return;
-}
-
-setValidationError("Email atau password salah, atau Anda belum pernah melakukan pemesanan.");
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center p-4 relative font-sans text-slate-700">
-      
-      <button 
+
+      <button
         onClick={onBackToPublic}
         className="absolute top-6 left-6 text-slate-700 text-xs bg-white border border-slate-200/80 rounded-lg px-4 py-2 hover:bg-slate-50 flex items-center gap-2 cursor-pointer transition-all shadow-xs"
       >
@@ -89,7 +74,7 @@ setValidationError("Email atau password salah, atau Anda belum pernah melakukan 
       </div>
 
       <div className="bg-white rounded-2xl w-full max-w-md shadow-xl overflow-hidden p-8 sm:p-10 border border-slate-200/85 border-t-4 border-t-[#0f5132] relative z-10">
-        
+
         <div className="text-center space-y-2 mb-8 flex flex-col items-center">
           <CompanyLogo variant="full" iconSize="lg" className="mb-4" />
           <div className="space-y-1">
@@ -175,7 +160,7 @@ setValidationError("Email atau password salah, atau Anda belum pernah melakukan 
         </form>
 
         <p className="text-center text-[10px] text-slate-400 font-medium mt-8 select-none">
-          © 2026 Khadijah Travel Indonesia
+          © 2025 PT Khadijah Travel Indonesia
         </p>
       </div>
     </div>
