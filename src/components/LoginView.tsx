@@ -17,27 +17,19 @@ export default function LoginView({ onLoginSuccess, onBackToPublic }: LoginViewP
   const [validationError, setValidationError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
 
-  const handleLogin = async (e: React.FormEvent) => {
+ const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setValidationError("");
     setLoading(true);
 
     try {
-      // Cek admin dulu
-      const adminRes = await fetch(`${API}/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-
-      if (adminRes.ok) {
-        const data = await adminRes.json();
-        if (data.user) {
-          onLoginSuccess(email, "admin");
-          return;
-        }
-      }
-
+      // ... isi kode ...
+    } catch (err) {
+      setValidationError("Gagal terhubung ke server. Coba lagi.");
+    } finally {
+      setLoading(false);
+    }
+  };
     // Cek jamaah (harus sudah pernah booking dengan email & password yang sesuai)
 const jamaahRes = await fetch(`${API}/login-jamaah`, {
   method: 'POST',
