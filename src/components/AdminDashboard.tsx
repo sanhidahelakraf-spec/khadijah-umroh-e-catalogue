@@ -189,13 +189,12 @@ const handleDeleteBooking = async (id: string) => {
 
   const selectedTrackingBooking = bookings.find(b => b.id === selectedTrackingBookingId) || bookings[0];
 
-  const navItems = [
+ const navItems = [
     { id: "dashboard", label: "Dashboard", icon: <BarChart3 className="w-4 h-4 text-[#c5a880]" /> },
     { id: "paket", label: "Paket Umroh", icon: <Briefcase className="w-4 h-4 text-[#c5a880]" /> },
     { id: "jamaah", label: "Data Jamaah", icon: <Users className="w-4 h-4 text-[#c5a880]" /> },
     { id: "tracking", label: "Tracking Order", icon: <RefreshCw className="w-4 h-4 text-[#c5a880]" /> },
     { id: "promo", label: "Promo & Hub", icon: <FileText className="w-4 h-4 text-[#c5a880]" /> },
-    { id: "laporan", label: "Laporan", icon: <FileText className="w-4 h-4 text-[#c5a880]" /> },
     { id: "users", label: "Manajemen User", icon: <UserPlus className="w-4 h-4 text-[#c5a880]" /> },
     { id: "pengaturan", label: "Pengaturan", icon: <Settings className="w-4 h-4 text-[#c5a880]" /> },
   ];
@@ -256,7 +255,7 @@ const handleDeleteBooking = async (id: string) => {
           {activeTab === "dashboard" && (
             <div className="space-y-8">
               <h2 className="text-xl sm:text-2xl font-black text-gray-900">DASHBOARD ADMIN</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div className="bg-white rounded-xl shadow-xs border border-gray-100 p-6 flex items-center justify-between">
                   <div><span className="text-xs text-gray-400 font-bold uppercase block">Total Paket</span><strong className="text-3xl font-black text-gray-900 block">{totalPackagesCount}</strong></div>
                   <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center"><Package className="w-6 h-6 text-emerald-700" /></div>
@@ -268,10 +267,6 @@ const handleDeleteBooking = async (id: string) => {
                 <div className="bg-white rounded-xl shadow-xs border border-gray-100 p-6 flex items-center justify-between">
                   <div><span className="text-xs text-gray-400 font-bold uppercase block">Pesanan Aktif</span><strong className="text-3xl font-black text-gray-900 block">{activeOrdersCount}</strong></div>
                   <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center"><CheckCircle className="w-6 h-6 text-sky-700" /></div>
-                </div>
-                <div className="bg-white rounded-xl shadow-xs border border-gray-100 p-6 flex items-center justify-between">
-                  <div><span className="text-xs text-gray-400 font-bold uppercase block">Pendapatan</span><strong className="text-xl font-black text-emerald-800 block">{formatIDR(totalIncome)}</strong></div>
-                  <div className="w-12 h-12 rounded-xl bg-teal-50 flex items-center justify-center"><DollarSign className="w-6 h-6 text-emerald-800" /></div>
                 </div>
               </div>
               <div className="bg-white rounded-xl shadow-xs border border-gray-100 p-6 space-y-3">
@@ -483,17 +478,7 @@ const handleDeleteBooking = async (id: string) => {
             </div>
           )}
 
-          {/* LAPORAN */}
-          {activeTab === "laporan" && (
-            <div className="bg-white rounded-xl shadow-xs border border-gray-100 p-8 space-y-6">
-              <h2 className="text-xl font-bold text-gray-900">Laporan & Berkas Transaksi</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <button onClick={() => alert("Mengekspor Excel...")} className="p-4 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold rounded-lg border border-emerald-100 cursor-pointer flex flex-col items-center gap-2"><FileText className="w-6 h-6" /><span>Manifest Jamaah (XLSX)</span></button>
-                <button onClick={() => alert("Mencetak PDF...")} className="p-4 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold rounded-lg border border-emerald-100 cursor-pointer flex flex-col items-center gap-2"><FileText className="w-6 h-6" /><span>Kuitansi Pembayaran (PDF)</span></button>
-                <button onClick={() => alert("Laporan Keuangan...")} className="p-4 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold rounded-lg border border-emerald-100 cursor-pointer flex flex-col items-center gap-2"><BarChart3 className="w-6 h-6" /><span>Laporan Laba/Rugi</span></button>
-              </div>
-            </div>
-          )}
+          
 
           {/* MANAJEMEN USER */}
           {activeTab === "users" && (
