@@ -23,7 +23,34 @@ export default function LoginView({ onLoginSuccess, onBackToPublic }: LoginViewP
     setLoading(true);
 
     try {
-      // ... isi kode ...
+      // Cek admin dulu
+      const adminRes = await fetch(`${API}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+      if (adminRes.ok) {
+        const data = await adminRes.json();
+        if (data.user) {
+          onLoginSuccess(email, "admin");
+          return;
+        }
+      }
+
+      // Cek jamaah (harus sudah pernah booking dengan email & password yang sesuai)
+      const jamaahRes = await fetch(`${API}/login-jamaah`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+      if (jamaahRes.ok) {
+        onLoginSuccess(email, "jamaah");
+        return;
+      }
+
+      setValidationError("Email atau password salah, atau Anda belum pernah melakukan pemesanan.");
     } catch (err) {
       setValidationError("Gagal terhubung ke server. Coba lagi.");
     } finally {
