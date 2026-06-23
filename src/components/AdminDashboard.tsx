@@ -81,6 +81,11 @@ const handleDeactivatePromo = async () => {
 
   // User management states
   const [adminList, setAdminList] = React.useState<any[]>([]);
+  const [jamaahList, setJamaahList] = React.useState<User[]>(users);
+
+  React.useEffect(() => {
+  setJamaahList(users);
+  }, [users]);
   const [newUserEmail, setNewUserEmail] = React.useState("");
   const [newUserName, setNewUserName] = React.useState("");
   const [newUserPassword, setNewUserPassword] = React.useState("");
@@ -567,16 +572,16 @@ const handleDeleteBooking = async (id: string) => {
                       <tr><th className="py-3 px-4">Nama</th><th className="py-3 px-4">Email</th><th className="py-3 px-4">No. HP</th><th className="py-3 px-4 text-center">Aksi</th></tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100 text-gray-700">
-                      {users.map(u => (
+                      {jamaahList.map(u => (
                         <tr key={u.id} className="hover:bg-gray-50">
                           <td className="py-3 px-4 font-bold">{u.name}</td>
                           <td className="py-3 px-4">{u.email}</td>
                           <td className="py-3 px-4 font-mono">{u.phone}</td>
                           <td className="py-3 px-4 text-center">
-                            <button onClick={async () => {
-                              if (window.confirm("Hapus jamaah ini?")) {
-                                await fetch(`${API}/jamaah/${u.id}`, { method: 'DELETE' });
-                                onUpdateBookings(bookings.filter(b => b.userEmail !== u.email));
+                          <button onClick={async () => {
+                            if (window.confirm("Hapus jamaah ini?")) {
+                              await fetch(`${API}/jamaah/${u.id}`, { method: 'DELETE' });
+                              setJamaahList(prev => prev.filter(j => j.id !== u.id));
                               }
                             }} className="p-1 px-2 bg-red-50 hover:bg-red-100 text-red-600 rounded border border-red-200 cursor-pointer text-[10px] font-bold">Hapus</button>
                           </td>
