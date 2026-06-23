@@ -1,7 +1,7 @@
 import React from "react";
 import { 
-  Compass, User, Calendar, BookOpen, Clock, Check, Plane, Hotel,
-  LogOut, Globe, Milestone, ShieldCheck, Save, Download, AlertCircle, FileCheck,
+  Compass, User, Calendar, Clock, Check, Plane, Hotel,
+  LogOut, Globe, Milestone, ShieldCheck, Save, FileCheck,
   Menu, X
 } from "lucide-react";
 import { Booking } from "../types";
@@ -24,18 +24,15 @@ export default function JamaahDashboard({
   onGoToPublic,
 }: JamaahDashboardProps) {
   
-  // Find the exact booking associated with this logged-in email.
   const myBooking = bookings.find(
     b => b.userEmail.toLowerCase() === currentEmail.toLowerCase()
-  ) || bookings[0]; // fallback safely to Ahmad Fauzi
+  ) || bookings[0];
 
   const timelineSteps = getTrackingTimeline(myBooking);
 
-  // Sidebar and active tab states
-  const [activeTab, setActiveTab3] = React.useState<"dashboard" | "pribadi" | "brosur">("dashboard");
+  const [activeTab, setActiveTab3] = React.useState<"dashboard" | "pribadi">("dashboard");
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
-  // Profile forms fields dynamically initialized from myBooking model
   const [fullName, setFullName] = React.useState(myBooking.userName || "");
   const [phone, setPhone] = React.useState(myBooking.userPhone || "");
   const [nik, setNik] = React.useState(myBooking.userNik || "3171020409850003");
@@ -45,46 +42,12 @@ export default function JamaahDashboard({
   const [address, setAddress] = React.useState(myBooking.userAddress || "Jl. Mawar Merah No. 45, Duren Sawit, Jakarta Timur");
   const [vaccine, setVaccine] = React.useState(myBooking.userVaccine || "Sudah (Meningitis & Influenza)");
   
-  // Checklist states for physical/softcopy verification documents
   const [docPaspor, setDocPaspor] = React.useState(myBooking.userDocPaspor ?? true);
   const [docKtp, setDocKtp] = React.useState(myBooking.userDocKtp ?? true);
   const [docKk, setDocKk] = React.useState(myBooking.userDocKk ?? true);
   const [docFoto, setDocFoto] = React.useState(myBooking.userDocFoto ?? false);
 
   const [saveSuccess, setSaveSuccess] = React.useState(false);
-
-  // Brochure list
-  const brochures = [
-    {
-      id: "b-premium",
-      title: "Brosur Paket Umroh Premium & VIP 2026",
-      size: "4.8 MB",
-      format: "PDF",
-      highlights: "Hotel Bintang 5 Mekkah (Swissotel) & Madinah (Pullman)",
-      description: "Detail lengkap itinerary perjalanan 12 hari, mutawwif ustadz pembimbing tersertifikasi, ragam menu hidangan Nusantara, dan pembagian porsi kuota bandara."
-    },
-    {
-      id: "b-reguler",
-      title: "Katalog Perjalanan Umroh Reguler Syawal 1447 H",
-      size: "3.2 MB",
-      format: "PDF",
-      highlights: "Hotel Bintang 4 Mekkah (Anjum) & Madinah (Al-Ansar)",
-      description: "Berisi estimasi jadwal manasik pra-keberangkatan, rincian biaya ziarah opsional ke Thaif dan Goa Hira, serta subsidi potongan harga keluarga."
-    },
-    {
-      id: "b-panduan",
-      title: "Buku Saku Doa & Panduan Praktis Manasik",
-      size: "2.1 MB",
-      format: "PDF",
-      highlights: "Edisi Digital Lengkap Transliterasi Arab-Latin",
-      description: "Kumpulan doa tawaf, sa'i, wukuf, tahallul, tata cara mengenakan kain ihram yang sah, serta tips menjaga kesehatan stamina selama perjalanan ibadah."
-    }
-  ];
-
-  // Brochure download states
-  const [downloadingId, setDownloadingId] = React.useState<string | null>(null);
-  const [downloadProgress, setDownloadProgress] = React.useState(0);
-  const [downloadSuccessMessage, setDownloadSuccessMessage] = React.useState<string | null>(null);
 
   const handleSaveProfile = (e: React.FormEvent) => {
     e.preventDefault();
@@ -115,36 +78,14 @@ export default function JamaahDashboard({
     }
 
     setSaveSuccess(true);
-    // Auto clear success toast
     setTimeout(() => {
       setSaveSuccess(false);
     }, 4500);
   };
 
-  const handleTriggerDownload = (brochureId: string, title: string) => {
-    setDownloadingId(brochureId);
-    setDownloadProgress(0);
-    setDownloadSuccessMessage(null);
-
-    const interval = setInterval(() => {
-      setDownloadProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setTimeout(() => {
-            setDownloadingId(null);
-            setDownloadSuccessMessage(`Alhamdulillah! Berkas "${title}" berhasil diunduh ke folder Downloads perangkat Anda.`);
-          }, 350);
-          return 100;
-        }
-        return prev + 10;
-      });
-    }, 120);
-  };
-
   return (
     <div className="min-h-screen bg-slate-50 text-slate-700 flex flex-col md:flex-row font-sans relative overflow-x-hidden">
       
-      {/* Backdrop for mobile */}
       {mobileMenuOpen && (
         <div 
           onClick={() => setMobileMenuOpen(false)} 
@@ -152,7 +93,6 @@ export default function JamaahDashboard({
         />
       )}
 
-      {/* Sidebar - matches standard jamaah drawer perfectly (Elegant Light Green Theme) */}
       <aside 
         className={`fixed inset-y-0 left-0 z-40 w-64 bg-[#0f5132] text-white/90 flex-shrink-0 flex flex-col justify-between py-6 px-4 border-r border-[#0f5132]/25 transform transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:h-screen md:sticky md:top-0 ${
           mobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
@@ -160,13 +100,11 @@ export default function JamaahDashboard({
       >
         <div className="space-y-8">
           
-          {/* Logo brand */}
           <div className="px-2 flex items-center justify-between">
             <div>
               <CompanyLogo variant="compact" iconSize="sm" theme="dark" />
               <span className="text-[10px] text-emerald-100/50 block uppercase font-bold tracking-wider mt-1.5 pl-1 font-sans">Daftar Jamaah</span>
             </div>
-            {/* Close button on mobile sidebar */}
             <button 
               onClick={() => setMobileMenuOpen(false)}
               className="p-1 text-white hover:text-[#c5a880] md:hidden cursor-pointer"
@@ -175,7 +113,6 @@ export default function JamaahDashboard({
             </button>
           </div>
  
-          {/* Navigation Links */}
           <nav className="space-y-1">
             <button 
               onClick={() => { setActiveTab3("dashboard"); setMobileMenuOpen(false); }}
@@ -214,26 +151,9 @@ export default function JamaahDashboard({
               <Milestone className="w-4 h-4 text-[#c5a880]" />
               <span>Tracking Alur</span>
             </button>
-
-            <button 
-              onClick={() => {
-                setActiveTab3("brosur");
-                setDownloadSuccessMessage(null);
-                setMobileMenuOpen(false);
-              }}
-              className={`w-full flex items-center gap-3 px-3.5 py-3 rounded-lg text-sm font-semibold cursor-pointer transition-all ${
-                activeTab === "brosur"
-                  ? "bg-[#0c4027] text-white border-l-4 border-l-[#c5a880]"
-                  : "text-white/80 hover:text-white hover:bg-[#0c4027]/50"
-              }`}
-            >
-              <BookOpen className="w-4 h-4 text-[#c5a880]" />
-              <span>Download Brosur</span>
-            </button>
           </nav>
         </div>
 
-        {/* Footer controls */}
         <div className="pt-6 border-t border-[#0c4027] space-y-2">
           <button
             onClick={() => { onGoToPublic(); setMobileMenuOpen(false); }}
@@ -252,13 +172,10 @@ export default function JamaahDashboard({
         </div>
       </aside>
 
-      {/* Main content body */}
       <main className="flex-1 flex flex-col min-w-0 bg-slate-50">
         
-        {/* Top Header Panel */}
         <div className="bg-white border-b border-slate-200 py-5 px-4 sm:px-8 flex items-center justify-between sticky top-0 z-20 font-sans">
           <div className="flex items-center gap-3">
-            {/* Hamburger button on mobile */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="p-1 px-2 border border-slate-200 rounded-md bg-slate-50 text-[#0f5132] hover:text-[#0c4027] md:hidden cursor-pointer flex items-center justify-center"
@@ -269,7 +186,7 @@ export default function JamaahDashboard({
               Member Area
             </span>
             <h1 className="text-sm font-bold text-slate-850 hidden sm:block">
-              Halaman Panduan Jamaah Umruhnologi
+              Halaman Panduan Jamaah Umroh
             </h1>
           </div>
           
@@ -284,13 +201,10 @@ export default function JamaahDashboard({
           </div>
         </div>
 
-        {/* Dynamic section indicator and views */}
         <div className="p-6 sm:p-8 space-y-8 flex-1 font-sans">
           
-          {/* TAB 1: DASHBOARD Saya */}
           {activeTab === "dashboard" && (
             <div className="space-y-8">
-              {/* Section Indicator */}
               <div className="flex items-center justify-between">
                 <div>
                   <span className="bg-white text-[#0f5132] text-xs font-black tracking-widest uppercase px-3 py-1.5 rounded shadow-xs border border-slate-200">
@@ -300,7 +214,6 @@ export default function JamaahDashboard({
                 </div>
               </div>
 
-              {/* Welcome Banner Box */}
               <div className="bg-white text-slate-800 rounded-2xl overflow-hidden p-6 sm:p-8 relative shadow-md border border-slate-200">
                 <div className="absolute right-0 top-0 bottom-0 w-1/3 opacity-5 bg-[radial-gradient(#c5a880_1.5px,transparent_1.5px)] [background-size:16px_16px] hidden sm:block" />
                 <div className="absolute right-10 top-6 bottom-6 w-52 opacity-15 bg-cover bg-center rounded-xl bg-[url('https://images.unsplash.com/photo-1542856391-010fb87dcfed?q=80&w=400&auto=format&fit=crop')] hidden sm:block" />
@@ -319,24 +232,20 @@ export default function JamaahDashboard({
                 </div>
               </div>
 
-              {/* Core Info Cards */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                 
-                {/* Card 1: Paket Saya */}
                 <div className="bg-white rounded-xl shadow-xs border border-slate-200 p-5 space-y-1.5 hover:shadow-md transition-shadow">
                   <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider block">Paket Saya</span>
                   <strong className="text-base sm:text-lg font-black text-[#0f5132] block truncate">{myBooking.packageName}</strong>
                   <span className="text-[9px] text-[#0f5132] font-bold block bg-[#0f5132]/10 px-2 py-0.5 rounded border border-[#0f5132]/20 w-max">Fasilitas Lengkap</span>
                 </div>
 
-                {/* Card 2: Tanggal Berangkat */}
                 <div className="bg-white rounded-xl shadow-xs border border-slate-200 p-5 space-y-1.5 hover:shadow-md transition-shadow">
                   <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider block">Tanggal Berangkat</span>
                   <strong className="text-base sm:text-lg font-black text-[#0f5132] block">{myBooking.travelDate}</strong>
                   <span className="text-[9px] text-slate-500 font-medium block">Kloter Utama</span>
                 </div>
 
-                {/* Card 3: Status */}
                 <div className="bg-white rounded-xl shadow-xs border border-slate-200 p-5 space-y-1.5 hover:shadow-md transition-shadow">
                   <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider block">Status</span>
                   <div className="block pt-1">
@@ -364,7 +273,6 @@ export default function JamaahDashboard({
                   <span className="text-[9px] text-slate-500 font-medium block pt-1">Berkas valid</span>
                 </div>
 
-                {/* Card 4: Kode Booking */}
                 <div className="bg-white rounded-xl shadow-xs border border-slate-200 p-5 space-y-1.5 hover:shadow-md transition-shadow">
                   <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider block">Kode Booking</span>
                   <strong className="text-base sm:text-lg font-mono font-black text-[#0f5132] block">{myBooking.bookingCode}</strong>
@@ -373,7 +281,6 @@ export default function JamaahDashboard({
 
               </div>
 
-              {/* Informasi Perjalanan */}
               <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-5 shadow-xs">
                 <h3 className="font-extrabold text-[#0f5132] text-sm tracking-tight uppercase border-b pb-2 border-slate-100">
                   Informasi Perjalanan
@@ -381,7 +288,6 @@ export default function JamaahDashboard({
                 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-sm">
                   
-                  {/* Maskapai Block */}
                   <div className="space-y-1.5 p-3 rounded-lg bg-slate-50 border border-slate-100">
                     <span className="text-[10px] text-slate-400 font-bold block uppercase tracking-wider">Maskapai</span>
                     <div className="flex items-center gap-2 text-slate-800 font-bold">
@@ -390,7 +296,6 @@ export default function JamaahDashboard({
                     </div>
                   </div>
 
-                  {/* Hotel Makkah Block */}
                   <div className="space-y-1.5 p-3 rounded-lg bg-slate-50 border border-slate-100">
                     <span className="text-[10px] text-slate-400 font-bold block uppercase tracking-wider">Hotel Makkah</span>
                     <div className="flex items-center gap-2 text-slate-800 font-bold">
@@ -399,7 +304,6 @@ export default function JamaahDashboard({
                     </div>
                   </div>
 
-                  {/* Hotel Madinah Block */}
                   <div className="space-y-1.5 p-3 rounded-lg bg-slate-50 border border-slate-100">
                     <span className="text-[10px] text-slate-400 font-bold block uppercase tracking-wider">Hotel Madinah</span>
                     <div className="flex items-center gap-2 text-slate-800 font-bold">
@@ -408,7 +312,6 @@ export default function JamaahDashboard({
                     </div>
                   </div>
 
-                  {/* Durasi Block */}
                   <div className="space-y-1.5 p-3 rounded-lg bg-slate-50 border border-slate-100">
                     <span className="text-[10px] text-slate-400 font-bold block uppercase tracking-wider">Durasi</span>
                     <div className="flex items-center gap-2 text-slate-800 font-bold">
@@ -420,7 +323,6 @@ export default function JamaahDashboard({
                 </div>
               </div>
 
-              {/* Interactive Timeline progress under user view */}
               <div id="tracking-berkas" className="bg-white rounded-xl border border-slate-200 p-6 sm:p-8 space-y-6 shadow-xs scroll-mt-24">
                 <div className="flex items-center justify-between pb-3 border-b border-slate-100">
                   <div>
@@ -438,7 +340,6 @@ export default function JamaahDashboard({
                   {timelineSteps.map((timeline) => (
                     <div key={timeline.step} className="relative">
                       
-                      {/* Circle check badge */}
                       <div className={`absolute left-[-42px] top-0.5 h-6 w-6 rounded-full flex items-center justify-center border-2 transition-all ${
                         timeline.isCompleted
                           ? "bg-[#0f5132] text-white border-[#0f5132]/80 scale-110 shadow-xs"
@@ -453,7 +354,6 @@ export default function JamaahDashboard({
 
                       <div className="grid grid-cols-1 md:grid-cols-4 gap-2 items-start font-sans">
                         
-                        {/* Label and timestamps */}
                         <div className="md:col-span-1">
                            <h4 className={`text-sm font-black ${
                             timeline.isCompleted ? "text-[#0f5132]" : "text-slate-400"
@@ -465,7 +365,6 @@ export default function JamaahDashboard({
                           </span>
                         </div>
 
-                        {/* Technical instructions or description */}
                         <div className="md:col-span-3 text-xs text-slate-500 leading-relaxed font-light font-sans">
                           {timeline.description}
                           {timeline.step === myBooking.trackingStep && (
@@ -485,7 +384,6 @@ export default function JamaahDashboard({
             </div>
           )}
 
-          {/* TAB 2: DATA PRIBADI (Extended Feature) */}
           {activeTab === "pribadi" && (
             <div className="space-y-8 animate-slide-up font-sans">
               <div>
@@ -509,7 +407,6 @@ export default function JamaahDashboard({
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 
-                {/* Form Profile Inputs Block - Col-span-2 */}
                 <form onSubmit={handleSaveProfile} className="lg:col-span-2 bg-white rounded-xl border border-slate-200 p-6 sm:p-8 space-y-6 shadow-xs">
                   
                   <h3 className="font-extrabold text-slate-800 text-base tracking-tight flex items-center gap-2 border-b pb-3 border-slate-100">
@@ -519,7 +416,6 @@ export default function JamaahDashboard({
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 text-xs">
                     
-                    {/* Full Name */}
                     <div className="space-y-1.5">
                       <label className="text-xs font-bold text-slate-500 block font-sans">Nama Lengkap Sesuai KTP <span className="text-red-500">*</span></label>
                       <input
@@ -531,7 +427,6 @@ export default function JamaahDashboard({
                       />
                     </div>
 
-                    {/* Email - Disabled */}
                     <div className="space-y-1.5">
                       <label className="text-xs font-bold text-slate-400 block font-sans">Alamat Email Pendaftaran (Tetap)</label>
                       <input
@@ -542,7 +437,6 @@ export default function JamaahDashboard({
                       />
                     </div>
 
-                    {/* No WhatsApp */}
                     <div className="space-y-1.5">
                       <label className="text-xs font-bold text-slate-500 block font-sans">No. HP / WhatsApp <span className="text-red-500">*</span></label>
                       <input
@@ -555,7 +449,6 @@ export default function JamaahDashboard({
                       />
                     </div>
 
-                    {/* NIK KTP */}
                     <div className="space-y-1.5">
                       <label className="text-xs font-bold text-slate-500 block font-sans">Nomor Induk Kependudukan (NIK KTP) <span className="text-red-500">*</span></label>
                       <input
@@ -569,7 +462,6 @@ export default function JamaahDashboard({
                       />
                     </div>
 
-                    {/* Passport Number */}
                     <div className="space-y-1.5">
                       <label className="text-xs font-bold text-slate-500 block font-sans">Nomor Paspor Aktif <span className="text-red-500">*</span></label>
                       <input
@@ -582,7 +474,6 @@ export default function JamaahDashboard({
                       />
                     </div>
 
-                    {/* Birth Place */}
                     <div className="space-y-1.5">
                       <label className="text-xs font-bold text-slate-500 block font-sans">Tempat Lahir Sesuai KTP <span className="text-red-500">*</span></label>
                       <input
@@ -594,7 +485,6 @@ export default function JamaahDashboard({
                       />
                     </div>
 
-                    {/* Birth Date */}
                     <div className="space-y-1.5">
                       <label className="text-xs font-bold text-slate-500 block font-sans">Tanggal Lahir Sesuai KTP <span className="text-red-500">*</span></label>
                       <input
@@ -607,7 +497,6 @@ export default function JamaahDashboard({
                       />
                     </div>
 
-                    {/* Vaccination status */}
                     <div className="space-y-1.5">
                       <label className="text-xs font-bold text-slate-500 block font-sans">Status Vaksin Meningitis <span className="text-red-500">*</span></label>
                       <select
@@ -623,7 +512,6 @@ export default function JamaahDashboard({
 
                   </div>
 
-                  {/* Complete House Address */}
                   <div className="space-y-1.5 text-xs">
                     <label className="text-xs font-bold text-slate-500 block font-sans">Alamat Rumah Lengkap Domisili <span className="text-red-500">*</span></label>
                     <textarea
@@ -635,7 +523,6 @@ export default function JamaahDashboard({
                     />
                   </div>
 
-                  {/* Submission Row */}
                   <div className="pt-4 border-t border-slate-100 flex justify-end">
                     <button
                       type="submit"
@@ -648,7 +535,6 @@ export default function JamaahDashboard({
 
                 </form>
 
-                {/* Document Verification Side panel */}
                 <div className="space-y-6">
                   
                   <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-4 shadow-xs">
@@ -657,12 +543,11 @@ export default function JamaahDashboard({
                       <span>Administrasi Berkas Fisik</span>
                     </h3>
                     <p className="text-[11px] text-slate-400 leading-relaxed font-light font-sans">
-                      Centang berkas-berkas yang telah Anda persiapkan atau serahkan ke pihak representative Khadijah Travel Menteng:
+                      Centang berkas-berkas yang telah Anda persiapkan atau serahkan ke pihak representative Khadijah Travel:
                     </p>
 
                     <div className="space-y-3.5 pt-2 text-xs">
                       
-                      {/* Document 1: Passport */}
                       <label className="flex items-center gap-2.5 cursor-pointer select-none">
                         <input
                           type="checkbox"
@@ -676,7 +561,6 @@ export default function JamaahDashboard({
                         </div>
                       </label>
 
-                      {/* Document 2: KTP */}
                       <label className="flex items-center gap-2.5 cursor-pointer select-none">
                         <input
                           type="checkbox"
@@ -690,7 +574,6 @@ export default function JamaahDashboard({
                         </div>
                       </label>
 
-                      {/* Document 3: KK */}
                       <label className="flex items-center gap-2.5 cursor-pointer select-none">
                         <input
                           type="checkbox"
@@ -704,7 +587,6 @@ export default function JamaahDashboard({
                         </div>
                       </label>
 
-                      {/* Document 4: Pas Foto */}
                       <label className="flex items-center gap-2.5 cursor-pointer select-none">
                         <input
                           type="checkbox"
@@ -731,107 +613,6 @@ export default function JamaahDashboard({
 
                 </div>
 
-              </div>
-
-            </div>
-          )}
-
-          {/* TAB 3: DOWNLOAD BROSUR */}
-          {activeTab === "brosur" && (
-            <div className="space-y-8 animate-slide-up font-sans">
-              <div>
-                <span className="bg-white text-[#0f5132] text-xs font-black tracking-widest uppercase px-3 py-1.5 rounded shadow-xs border border-slate-200">
-                  PUSAT UNDUHAN KATALOG & BROSUR TRAVEL
-                </span>
-                <p className="text-xs text-slate-500 font-medium mt-1 font-sans">Unduh panduan manasik, kuitansi, itinerary perjalanan, atau flyer rincian fasilitas hotel bintang secara gratis.</p>
-              </div>
-
-              {downloadSuccessMessage && (
-                <div className="p-4 bg-emerald-50 text-[#0f5132] rounded-xl border border-emerald-250 flex items-center gap-3 animate-scale-up text-xs font-bold leading-normal font-sans shadow-xs">
-                  <Check className="h-5 w-5 text-[#0f5132] flex-shrink-0" />
-                  <span>{downloadSuccessMessage}</span>
-                </div>
-              )}
-
-              {/* Brochure grid options */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {brochures.map((item) => (
-                  <div key={item.id} className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs hover:shadow-md transition-all flex flex-col justify-between">
-                    
-                    {/* Top Detail */}
-                    <div className="p-6 space-y-4">
-                      
-                      {/* Badge format / size */}
-                      <div className="flex items-center justify-between">
-                        <span className="text-[9px] font-bold text-slate-600 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded uppercase font-sans">{item.format} File</span>
-                        <span className="text-[10px] text-[#0f5132] font-black">{item.size}</span>
-                      </div>
-
-                      {/* Title display */}
-                      <h4 className="text-slate-900 text-sm font-black tracking-tight font-sans leading-snug">
-                        {item.title}
-                      </h4>
-
-                      {/* Highlights */}
-                      <span className="text-[10px] text-amber-800 font-bold block bg-amber-50 px-2 py-1 rounded border border-amber-100 font-sans">
-                        {item.highlights}
-                      </span>
-
-                      {/* Brief text info */}
-                      <p className="text-xs text-slate-600 leading-relaxed font-light font-sans">
-                        {item.description}
-                      </p>
-
-                    </div>
-
-                    {/* Footer Trigger buttons */}
-                    <div className="p-4 bg-slate-50 border-t border-slate-100 pt-3.5">
-                      {downloadingId === item.id ? (
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between text-[10px] font-bold py-1">
-                            <span className="text-slate-500 font-sans">Sedang mengunduh berkas...</span>
-                            <span className="text-[#0f5132]">{downloadProgress}%</span>
-                          </div>
-                          {/* Animated progress bar indicator */}
-                          <div className="w-full bg-slate-100 h-2 rounded overflow-hidden border border-slate-250">
-                            <div 
-                              className="bg-[#0f5132] h-full transition-all duration-100 ease-out"
-                              style={{ width: `${downloadProgress}%` }}
-                            />
-                          </div>
-                        </div>
-                      ) : (
-                        <button
-                          onClick={() => handleTriggerDownload(item.id, item.title)}
-                          className="w-full py-2.5 bg-[#0f5132] hover:bg-[#0c4027] text-white font-black tracking-wider uppercase rounded-lg border border-transparent text-xs flex items-center justify-center gap-1.5 cursor-pointer transition-all font-sans shadow-xs"
-                        >
-                          <Download className="w-3.5 h-3.5" />
-                          <span>Unduh Brosur</span>
-                        </button>
-                      )}
-                    </div>
-
-                  </div>
-                ))}
-              </div>
-
-              {/* Informative advice banner */}
-              <div className="bg-white rounded-xl border border-slate-200 p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 font-sans shadow-xs">
-                <div className="space-y-1.5 max-w-xl font-sans">
-                  <div className="flex items-center gap-2">
-                    <AlertCircle className="w-4 h-4 text-amber-550 flex-shrink-0" />
-                    <strong className="text-xs text-slate-800 uppercase font-black">Butuh Versi Cetak / Fisik?</strong>
-                  </div>
-                  <p className="text-[11px] text-slate-500 font-light leading-relaxed">
-                    Setiap pendaftaran paket Umroh VIP atau Premium di Khadijah Travel mengikutsertakan tas koper eksklusif fiber 24 inch, tas paspor gantung, buku ma'tsurat cetak, kain ihram (syal batik) bagi ikhwan, dan mukena bordir premium bagi akhwat secara cuma-cuma.
-                  </p>
-                </div>
-                <button
-                  onClick={() => alert("Permintaan katalog fisik berhasil dikirim! Kurir kami akan mengirimkannya ke alamat rumah Anda.")}
-                  className="px-4 py-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-250 text-[10px] tracking-wider uppercase font-black text-[#0f5132] rounded-lg cursor-pointer transition-all shadow-xs"
-                >
-                  Kirim Versi Cetak Ke Rumah
-                </button>
               </div>
 
             </div>
