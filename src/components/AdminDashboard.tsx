@@ -255,7 +255,7 @@ const handleDeleteBooking = async (id: string) => {
           {activeTab === "dashboard" && (
             <div className="space-y-8">
               <h2 className="text-xl sm:text-2xl font-black text-gray-900">DASHBOARD ADMIN</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div className="bg-white rounded-xl shadow-xs border border-gray-100 p-6 flex items-center justify-between">
                   <div><span className="text-xs text-gray-400 font-bold uppercase block">Total Paket</span><strong className="text-3xl font-black text-gray-900 block">{totalPackagesCount}</strong></div>
                   <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center"><Package className="w-6 h-6 text-emerald-700" /></div>
@@ -267,6 +267,10 @@ const handleDeleteBooking = async (id: string) => {
                 <div className="bg-white rounded-xl shadow-xs border border-gray-100 p-6 flex items-center justify-between">
                   <div><span className="text-xs text-gray-400 font-bold uppercase block">Pesanan Aktif</span><strong className="text-3xl font-black text-gray-900 block">{activeOrdersCount}</strong></div>
                   <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center"><CheckCircle className="w-6 h-6 text-sky-700" /></div>
+                </div>
+                <div className="bg-white rounded-xl shadow-xs border border-gray-100 p-6 flex items-center justify-between">
+                  <div><span className="text-xs text-gray-400 font-bold uppercase block">Pendapatan</span><strong className="text-xl font-black text-emerald-800 block">{formatIDR(totalIncome)}</strong></div>
+                  <div className="w-12 h-12 rounded-xl bg-teal-50 flex items-center justify-center"><DollarSign className="w-6 h-6 text-emerald-800" /></div>
                 </div>
               </div>
               <div className="bg-white rounded-xl shadow-xs border border-gray-100 p-6 space-y-3">
