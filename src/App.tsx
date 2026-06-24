@@ -389,7 +389,7 @@ const handleCreateBooking = async (details: {
                       onClick={() => setTrackingModalOpen(true)}
                       className="hover:text-white hover:underline cursor-pointer"
                     >
-                      Cek Tracking Penerbangan
+                      Cek Tracking Pesanan
                     </button>
                   </li>
                   <li>
@@ -397,7 +397,7 @@ const handleCreateBooking = async (details: {
                       onClick={() => setConsultModalOpen(true)}
                       className="hover:text-white hover:underline cursor-pointer"
                     >
-                      Hubungi Mutawwif Medis
+                      Hubungi Admin / Konsultasi
                     </button>
                   </li>
                   <li>
