@@ -29,10 +29,10 @@ app.post('/api/paket', (req, res) => {
 });
 
 app.put('/api/paket/:id', (req, res) => {
-  const { name, duration, price, schedule, status, description, hotelMakkah, hotelMadinah, maskapai, image, bestSeller } = req.body;
+  const { name, duration, price, schedule, status, description, hotelMakkah, hotelMadinah, hotelMakkahRating, hotelMadinahRating, maskapai, image, bestSeller } = req.body;
   db.query(
-    'UPDATE paket_umroh SET name=?, duration=?, price=?, schedule=?, status=?, description=?, hotelMakkah=?, hotelMadinah=?, maskapai=?, image=?, bestSeller=? WHERE id=?',
-    [name, duration, price, schedule, status, description, hotelMakkah, hotelMadinah, maskapai, image, bestSeller ? 1 : 0, req.params.id],
+    'UPDATE paket_umroh SET name=?, duration=?, price=?, schedule=?, status=?, description=?, hotelMakkah=?, hotelMadinah=?, hotelMakkahRating=?, hotelMadinahRating=?, maskapai=?, image=?, bestSeller=? WHERE id=?',
+    [name, duration, price, schedule, status, description, hotelMakkah, hotelMadinah, hotelMakkahRating || 4, hotelMadinahRating || 4, maskapai, image, bestSeller ? 1 : 0, req.params.id],
     (err) => {
       if (err) return res.status(500).json({ error: err.message });
       res.json({ success: true });
@@ -373,6 +373,20 @@ app.post('/api/promo/deactivate', (req, res) => {
   db.query('UPDATE promo SET isActive=0', (err) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json({ success: true });
+  });
+});
+
+//setup bintang hotel
+app.post('/api/setup-rating', (req, res) => {
+  db.query("SHOW COLUMNS FROM paket_umroh LIKE 'hotelMakkahRating'", (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (results.length > 0) {
+      return res.json({ success: true, message: 'Kolom rating sudah ada!' });
+    }
+    db.query('ALTER TABLE paket_umroh ADD COLUMN hotelMakkahRating INT DEFAULT 4, ADD COLUMN hotelMadinahRating INT DEFAULT 4', (err2) => {
+      if (err2) return res.status(500).json({ error: err2.message });
+      res.json({ success: true, message: 'Kolom rating berhasil ditambahkan!' });
+    });
   });
 });
 
