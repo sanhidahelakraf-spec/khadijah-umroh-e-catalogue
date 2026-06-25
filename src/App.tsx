@@ -258,6 +258,7 @@ const handleCreateBooking = async (details: {
                 <PackageDetail
                   pkg={selectedPackage}
                   onBookNow={(p) => setBookingModalPkg(p)}
+                  activePromo={activePromo}
                 />
               </div>
             </section>

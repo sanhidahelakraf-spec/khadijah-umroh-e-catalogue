@@ -8,9 +8,11 @@ import { UmrohPackage } from "../types";
 interface PackageDetailProps {
   pkg: UmrohPackage;
   onBookNow: (pkg: UmrohPackage) => void;
+  activePromo?: any;
 }
 
-export default function PackageDetail({ pkg, onBookNow }: PackageDetailProps) {
+export default function PackageDetail({ pkg, onBookNow, activePromo }: PackageDetailProps) {
+
   // Format currency to IDR
   const formatIDR = (num: number) => {
     return new Intl.NumberFormat("id-ID", {
@@ -120,9 +122,9 @@ export default function PackageDetail({ pkg, onBookNow }: PackageDetailProps) {
                   <Hotel className="w-4 h-4 text-[#0f5132]" />
                   <span>Hotel</span>
                 </div>
-                <div className="col-span-2 text-slate-800 space-y-1">
-                  <div><strong className="text-slate-950 font-bold">Makkah:</strong> {pkg.hotelMakkah}</div>
-                  <div><strong className="text-slate-950 font-bold">Madinah:</strong> {pkg.hotelMadinah}</div>
+               <div className="col-span-2 text-slate-800 space-y-1">
+                  <div><strong className="text-slate-950 font-bold">Makkah:</strong> {pkg.hotelMakkah} {pkg.hotelMakkahRating ? `(★${pkg.hotelMakkahRating})` : ""}</div>
+                  <div><strong className="text-slate-950 font-bold">Madinah:</strong> {pkg.hotelMadinah} {pkg.hotelMadinahRating ? `(★${pkg.hotelMadinahRating})` : ""}</div>
                 </div>
               </div>
 
@@ -215,18 +217,34 @@ export default function PackageDetail({ pkg, onBookNow }: PackageDetailProps) {
               </p>
             </div>
 
-            {/* Promo Card to Match Page 2 bottom */}
-            <div className="flex items-center gap-4 bg-amber-50 rounded-xl p-4 border border-amber-200/50 shadow-xs">
-              <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-[#0f5132] flex-shrink-0">
-                <Tag className="w-5 h-5 fill-[#0f5132]/10 text-[#0f5132]" />
+{/* Promo Card - dinamis dari database */}
+            {activePromo ? (
+              <div className="flex items-center gap-4 bg-amber-50 rounded-xl p-4 border border-amber-200/50 shadow-xs">
+                <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-[#0f5132] flex-shrink-0">
+                  <Tag className="w-5 h-5 fill-[#0f5132]/10 text-[#0f5132]" />
+                </div>
+                <div className="flex-1">
+                  <h4 className="text-xs font-bold text-amber-800 uppercase tracking-wider block">Promo Tersedia</h4>
+                  <p className="text-xs text-slate-950 font-bold mt-0.5">{activePromo.title}</p>
+                  <p className="text-xs text-slate-600">
+                    {activePromo.description}
+                    {activePromo.discountAmount ? (
+                      <> Potongan langsung sebesar <strong className="text-[#0f5132] font-bold">{formatIDR(activePromo.discountAmount)}</strong></>
+                    ) : null}
+                  </p>
+                </div>
               </div>
-              <div className="flex-1">
-                <h4 className="text-xs font-bold text-amber-800 uppercase tracking-wider block">Promo Tersedia</h4>
-                <p className="text-xs text-slate-950 font-bold mt-0.5">Diskon Ramadhan</p>
-                <p className="text-xs text-slate-600">Potongan langsung sebesar <strong className="text-[#0f5132] font-bold">Rp 3.000.000,-</strong> berlaku keberangkatan hingga <span className="font-semibold text-slate-950">30 April 2026</span></p>
+            ) : (
+              <div className="flex items-center gap-4 bg-slate-50 rounded-xl p-4 border border-slate-200 shadow-xs">
+                <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 flex-shrink-0">
+                  <Tag className="w-5 h-5" />
+                </div>
+                <div className="flex-1">
+                  <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider block">Promo Belum Tersedia</h4>
+                  <p className="text-xs text-slate-500 mt-0.5">Saat ini belum ada promo aktif untuk paket ini. Pantau terus halaman ini untuk penawaran menarik berikutnya.</p>
+                </div>
               </div>
-            </div>
-
+            )}
           </div>
 
           {/* Book Now Button exactly styled like Page 2 */}

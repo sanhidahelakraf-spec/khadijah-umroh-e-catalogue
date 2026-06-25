@@ -68,6 +68,8 @@ const handleDeactivatePromo = async () => {
   const [formSchedule, setFormSchedule] = React.useState("Mei 2026");
   const [formHotelMakkah, setFormHotelMakkah] = React.useState("");
   const [formHotelMadinah, setFormHotelMadinah] = React.useState("");
+  const [formHotelMakkahRating, setFormHotelMakkahRating] = React.useState(4);
+  const [formHotelMadinahRating, setFormHotelMadinahRating] = React.useState(4);
   const [formMaskapai, setFormMaskapai] = React.useState("Saudia Airlines");
   const [formDescription, setFormDescription] = React.useState("");
   const [formImage, setFormImage] = React.useState("");
@@ -121,21 +123,21 @@ const handleDeactivatePromo = async () => {
     if (!formName) return;
     const imgUrl = formImage || "https://images.unsplash.com/photo-1591604021695-0c69b7c05981?q=80&w=600&auto=format&fit=crop";
     if (editingPackageId) {
-      const updatedPkg = { name: formName, price: Number(formPrice), duration: Number(formDuration), schedule: formSchedule, hotelMakkah: formHotelMakkah, hotelMadinah: formHotelMadinah, maskapai: formMaskapai, description: formDescription, image: imgUrl, bestSeller: formBestSeller };
+      const updatedPkg = { name: formName, price: Number(formPrice), duration: Number(formDuration), schedule: formSchedule, hotelMakkah: formHotelMakkah, hotelMadinah: formHotelMadinah, hotelMakkahRating: formHotelMakkahRating, hotelMadinahRating: formHotelMadinahRating, maskapai: formMaskapai, description: formDescription, image: imgUrl, bestSeller: formBestSeller };
       await fetch(`${API}/paket/${editingPackageId}`, { method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(updatedPkg) });
       onUpdatePackages(packages.map(p => p.id === editingPackageId ? { ...p, ...updatedPkg } : p));
     } else {
-      const newPkg: UmrohPackage = { id: "pkg-" + Date.now(), name: formName, price: Number(formPrice), duration: Number(formDuration), schedule: formSchedule, status: "Aktif", hotelMakkah: formHotelMakkah || "Hotel Makkah (★4)", hotelMadinah: formHotelMadinah || "Hotel Madinah (★4)", maskapai: formMaskapai, description: formDescription || "Rencana perjalanan umroh dengan pelayanan terbaik.", image: imgUrl, bestSeller: formBestSeller };
-      await fetch(`${API}/paket`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(newPkg) });
+      const newPkg: UmrohPackage = { id: "pkg-" + Date.now(), name: formName, price: Number(formPrice), duration: Number(formDuration), schedule: formSchedule, status: "Aktif", hotelMakkah: formHotelMakkah || "Hotel Makkah (★4)", hotelMadinah: formHotelMadinah || "Hotel Madinah (★4)", hotelMakkahRating: formHotelMakkahRating, hotelMadinahRating: formHotelMadinahRating, maskapai: formMaskapai, description: formDescription || "Rencana perjalanan umroh dengan pelayanan terbaik.", image: imgUrl, bestSeller: formBestSeller };
       onUpdatePackages([...packages, newPkg]);
     }
     resetForm();
   };
 
-  const startEditPackage = (pkg: UmrohPackage) => {
+ const startEditPackage = (pkg: UmrohPackage) => {
     setEditingPackageId(pkg.id); setFormName(pkg.name); setFormPrice(pkg.price);
     setFormDuration(pkg.duration); setFormSchedule(pkg.schedule); setFormHotelMakkah(pkg.hotelMakkah);
-    setFormHotelMadinah(pkg.hotelMadinah); setFormMaskapai(pkg.maskapai); setFormDescription(pkg.description);
+    setFormHotelMadinah(pkg.hotelMadinah); setFormHotelMakkahRating(pkg.hotelMakkahRating || 4); setFormHotelMadinahRating(pkg.hotelMadinahRating || 4);
+    setFormMaskapai(pkg.maskapai); setFormDescription(pkg.description);
     setFormImage(pkg.image); setFormBestSeller(!!pkg.bestSeller); setIsAddingPackage(true);
   };
 
@@ -316,8 +318,10 @@ const handleDeleteBooking = async (id: string) => {
                       <div className="space-y-1.5"><label className="text-xs font-bold text-gray-700 block">Harga (Rp) *</label><input type="number" required value={formPrice} onChange={e => setFormPrice(Number(e.target.value))} className="w-full text-xs px-3.5 py-2.5 border border-gray-200 rounded bg-white text-gray-800 focus:outline-hidden focus:border-emerald-800" /></div>
                       <div className="space-y-1.5"><label className="text-xs font-bold text-gray-700 block">Durasi</label><select value={formDuration} onChange={e => setFormDuration(Number(e.target.value))} className="w-full text-xs px-3.5 py-2.5 border border-gray-200 rounded bg-white text-gray-800 focus:outline-hidden"><option value={9}>9 Hari</option><option value={12}>12 Hari</option><option value={16}>16 Hari</option></select></div>
                       <div className="space-y-1.5"><label className="text-xs font-bold text-gray-700 block">Jadwal</label><input type="text" required value={formSchedule} onChange={e => setFormSchedule(e.target.value)} className="w-full text-xs px-3.5 py-2.5 border border-gray-200 rounded bg-white text-gray-800 focus:outline-hidden" /></div>
-                      <div className="space-y-1.5"><label className="text-xs font-bold text-gray-700 block">Hotel Makkah *</label><input type="text" required value={formHotelMakkah} onChange={e => setFormHotelMakkah(e.target.value)} className="w-full text-xs px-3.5 py-2.5 border border-gray-200 rounded bg-white text-gray-800 focus:outline-hidden" /></div>
+                     <div className="space-y-1.5"><label className="text-xs font-bold text-gray-700 block">Hotel Makkah *</label><input type="text" required value={formHotelMakkah} onChange={e => setFormHotelMakkah(e.target.value)} className="w-full text-xs px-3.5 py-2.5 border border-gray-200 rounded bg-white text-gray-800 focus:outline-hidden" /></div>
+                      <div className="space-y-1.5"><label className="text-xs font-bold text-gray-700 block">Bintang Hotel Makkah</label><select value={formHotelMakkahRating} onChange={e => setFormHotelMakkahRating(Number(e.target.value))} className="w-full text-xs px-3.5 py-2.5 border border-gray-200 rounded bg-white text-gray-800 focus:outline-hidden"><option value={3}>★3</option><option value={4}>★4</option><option value={5}>★5</option></select></div>
                       <div className="space-y-1.5"><label className="text-xs font-bold text-gray-700 block">Hotel Madinah *</label><input type="text" required value={formHotelMadinah} onChange={e => setFormHotelMadinah(e.target.value)} className="w-full text-xs px-3.5 py-2.5 border border-gray-200 rounded bg-white text-gray-800 focus:outline-hidden" /></div>
+                      <div className="space-y-1.5"><label className="text-xs font-bold text-gray-700 block">Bintang Hotel Madinah</label><select value={formHotelMadinahRating} onChange={e => setFormHotelMadinahRating(Number(e.target.value))} className="w-full text-xs px-3.5 py-2.5 border border-gray-200 rounded bg-white text-gray-800 focus:outline-hidden"><option value={3}>★3</option><option value={4}>★4</option><option value={5}>★5</option></select></div>
                       <div className="space-y-1.5"><label className="text-xs font-bold text-gray-700 block">Maskapai</label><select value={formMaskapai} onChange={e => setFormMaskapai(e.target.value)} className="w-full text-xs px-3.5 py-2.5 border border-gray-200 rounded bg-white text-gray-800 focus:outline-hidden"><option>Saudia Airlines</option><option>Garuda Indonesia</option><option>Batik Air</option><option>Lion Air</option></select></div>
                       <div className="space-y-1.5"><label className="text-xs font-bold text-gray-700 block">URL Foto</label><input type="text" value={formImage} onChange={e => setFormImage(e.target.value)} placeholder="Kosongkan untuk default" className="w-full text-xs px-3.5 py-2.5 border border-gray-200 rounded bg-white text-gray-800 focus:outline-hidden font-mono" /></div>
                     </div>

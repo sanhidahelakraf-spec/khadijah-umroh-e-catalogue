@@ -1,13 +1,15 @@
 export interface UmrohPackage {
   id: string;
   name: string;
-  duration: number; // e.g. 12
-  price: number; // e.g. 35000000
-  schedule: string; // e.g. "12 Mei 2026"
+  duration: number;
+  price: number;
+  schedule: string;
   status: "Aktif" | "Non-Aktif";
   description: string;
   hotelMakkah: string;
   hotelMadinah: string;
+  hotelMakkahRating?: number;
+  hotelMadinahRating?: number;
   maskapai: string;
   image: string;
   bestSeller?: boolean;
