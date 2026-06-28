@@ -177,44 +177,59 @@ export const initialUsers: User[] = [
 ];
 
 export const getTrackingTimeline = (booking: Booking) => {
+  const formatTimestamp = (ts?: string) => {
+    if (!ts) return { date: "-", time: "-" };
+    const d = new Date(ts);
+    return {
+      date: d.toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" }),
+      time: d.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }),
+    };
+  };
+
+  const s1 = formatTimestamp(booking.step1Date);
+  const s2 = formatTimestamp(booking.step2Date);
+  const s3 = formatTimestamp(booking.step3Date);
+  const s4 = formatTimestamp(booking.step4Date);
+  const s5 = formatTimestamp(booking.step5Date);
+
   return [
     {
       step: 1,
       label: "Data diterima",
-      date: booking.date,
-      time: "08:00",
+      date: booking.step1Date ? s1.date : booking.date,
+      time: booking.step1Date ? s1.time : "-",
       description: "Pendaftaran online & kelengkapan berkas berhasil diterima oleh Admin.",
       isCompleted: booking.trackingStep >= 1,
     },
     {
       step: 2,
       label: "Verifikasi pembayaran",
-      date: booking.date,
-      time: "10:15",
+      date: booking.trackingStep >= 2 ? s2.date : "-",
+      time: booking.trackingStep >= 2 ? s2.time : "-",
       description: `Pembayaran status [${booking.paymentStatus}] terverifikasi di sistem kami.`,
       isCompleted: booking.trackingStep >= 2,
     },
     {
       step: 3,
       label: "Proses visa",
-      date: "13 Mei 2026",
-      time: "14:20",
+      date: booking.trackingStep >= 3 ? s3.date : "-",
+      time: booking.trackingStep >= 3 ? s3.time : "-",
       description: "Dokumen paspor dan suntik meningitis diproses ke Kedutaan Saudi.",
       isCompleted: booking.trackingStep >= 3,
     },
     {
       step: 4,
       label: "Jadwal keberangkatan",
-      date: booking.travelDate,
-      time: "06:00",
+      date: booking.trackingStep >= 4 ? s4.date : booking.travelDate,
+      time: booking.trackingStep >= 4 ? s4.time : "-",
       description: `Pelepasan jamaah di Terminal 3 Bandara Soekarno-Hatta dengan ${booking.maskapai}.`,
       isCompleted: booking.trackingStep >= 4,
     },
     {
       step: 5,
       label: "Selesai",
-      date: "Ibadah Lancar",
-      time: "24 Jam",
+      date: booking.trackingStep >= 5 ? s5.date : "-",
+      time: booking.trackingStep >= 5 ? s5.time : "-",
       description: "Melaksanakan ibadah Umroh dengan pendampingan mutawwif ahli.",
       isCompleted: booking.trackingStep >= 5,
     },

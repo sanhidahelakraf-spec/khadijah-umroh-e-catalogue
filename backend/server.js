@@ -70,14 +70,46 @@ app.post('/api/pesanan', (req, res) => {
 
 app.put('/api/pesanan/:id', (req, res) => {
   const b = req.body;
-  db.query(
-    `UPDATE pesanan SET status=?, paymentStatus=?, trackingStep=?, travelDate=? WHERE id=?`,
-    [b.status, b.paymentStatus, b.trackingStep, b.travelDate, req.params.id],
-    (err) => {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json({ success: true });
+  const id = req.params.id;
+
+  // Ambil data lama dulu untuk cek apakah step berubah
+  db.query('SELECT trackingStep, step1Date, step2Date, step3Date, step4Date, step5Date FROM pesanan WHERE id=?', [id], (errGet, rows) => {
+    if (errGet) return res.status(500).json({ error: errGet.message });
+    const old = rows[0] || {};
+    const now = new Date();
+    const newStep = b.trackingStep;
+
+    const stepDates = {
+      step1Date: old.step1Date,
+      step2Date: old.step2Date,
+      step3Date: old.step3Date,
+      step4Date: old.step4Date,
+      step5Date: old.step5Date,
+    };
+
+    // Set timestamp untuk step yang baru tercapai (kalau belum ada timestampnya)
+    for (let i = 1; i <= newStep; i++) {
+      const key = `step${i}Date`;
+      if (!stepDates[key]) stepDates[key] = now;
     }
-  );
+    // Kalau step di-mundurkan, hapus timestamp step yang lebih tinggi
+    for (let i = newStep + 1; i <= 5; i++) {
+      const key = `step${i}Date`;
+      stepDates[key] = null;
+    }
+
+    db.query(
+      `UPDATE pesanan SET status=?, paymentStatus=?, trackingStep=?, travelDate=?, 
+       step1Date=?, step2Date=?, step3Date=?, step4Date=?, step5Date=? WHERE id=?`,
+      [b.status, b.paymentStatus, b.trackingStep, b.travelDate,
+       stepDates.step1Date, stepDates.step2Date, stepDates.step3Date, stepDates.step4Date, stepDates.step5Date,
+       id],
+      (err) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ success: true });
+      }
+    );
+  });
 });
 app.delete('/api/pesanan/:id', (req, res) => {
   db.query('DELETE FROM pesanan WHERE id=?', [req.params.id], (err) => {
@@ -314,6 +346,20 @@ app.post('/api/setup-password', (req, res) => {
       if (err2) return res.status(500).json({ error: err2.message });
       res.json({ success: true, message: 'Kolom password berhasil ditambahkan ke pesanan!' });
     });
+  });
+});
+
+app.post('/api/setup-step-dates', (req, res) => {
+  db.query("SHOW COLUMNS FROM pesanan LIKE 'step1Date'", (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (results.length > 0) return res.json({ success: true, message: 'Kolom sudah ada!' });
+    db.query(
+      'ALTER TABLE pesanan ADD COLUMN step1Date DATETIME, ADD COLUMN step2Date DATETIME, ADD COLUMN step3Date DATETIME, ADD COLUMN step4Date DATETIME, ADD COLUMN step5Date DATETIME',
+      (err2) => {
+        if (err2) return res.status(500).json({ error: err2.message });
+        res.json({ success: true, message: 'Kolom step dates berhasil ditambahkan!' });
+      }
+    );
   });
 });
 

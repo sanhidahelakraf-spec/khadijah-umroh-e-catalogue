@@ -45,6 +45,11 @@ export interface Booking {
   userDocKtp?: boolean;
   userDocKk?: boolean;
   userDocFoto?: boolean;
+  step1Date?: string;
+  step2Date?: string;
+  step3Date?: string;
+  step4Date?: string;
+  step5Date?: string;
 }
 
 export interface User {
