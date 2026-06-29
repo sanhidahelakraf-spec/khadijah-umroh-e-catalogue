@@ -114,7 +114,7 @@ const handleCreateBooking = async (details: {
       }),
       status: "Pending",
       paymentStatus: "Belum Bayar",
-      travelDate: "12 Mei 2026",
+      travelDate: bookingModalPkg.schedule,
       trackingStep: 1,
       maskapai: bookingModalPkg.maskapai,
       hotelMakkah: bookingModalPkg.hotelMakkah,
