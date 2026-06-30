@@ -65,7 +65,7 @@ export default function PackageCard({ pkg, onSelect }: PackageCardProps) {
             {/* Hotel */}
             <div className="flex items-center gap-2 text-xs text-slate-600">
               <Hotel className="w-4 h-4 text-[#c5a880] flex-shrink-0" />
-              <span className="truncate">Hotel {pkg.id.includes("premium") ? "Bintang 5" : pkg.id.includes("reguler") ? "Bintang 4" : "Bintang 3"}</span>
+              <span className="truncate">Hotel Bintang {pkg.hotelMakkahRating || (pkg.id.includes("premium") ? 5 : pkg.id.includes("reguler") ? 4 : 3)}</span>
             </div>
 
           </div>
