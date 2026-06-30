@@ -57,10 +57,13 @@ const refreshPackages = () => {
   const [currentRole, setCurrentRole] = React.useState<"admin" | "jamaah" | null>("jamaah");
 
   // Detailed selected package (Defaults to Premium pkg for direct Slide 2 replication)
-  const [selectedPackage, setSelectedPackage] = React.useState<UmrohPackage | null>(() => {
-    return initialPackages.find(p => p.id === "pkg-premium") || initialPackages[0];
-  });
+const [selectedPackage, setSelectedPackage] = React.useState<UmrohPackage | null>(null);
 
+React.useEffect(() => {
+  if (packages.length > 0 && !selectedPackage) {
+    setSelectedPackage(packages.find(p => p.id === "pkg-premium") || packages[0]);
+  }
+}, [packages]);
   // Modal open controllers
   const [bookingModalPkg, setBookingModalPkg] = React.useState<UmrohPackage | null>(null);
   const [consultModalOpen, setConsultModalOpen] = React.useState(false);
